@@ -1,0 +1,18 @@
+{
+  "name": "com.sosxr.",
+  "version": "1.0.0",
+  "displayName": "",
+  "description": "",
+  "unity": "2021.3",
+  "dependencies": {
+    
+  },
+  "keywords": [
+    "Unity"
+  ],
+  "author": {
+    "name": "Maarten R. Struijk Wilbrink",
+    "email": "sosxr@fsw.leidenuniv.nl",
+    "url": "https://researchwiki.solo.universiteitleiden.nl/xwiki/bin/view/Main/"
+  }
+}
