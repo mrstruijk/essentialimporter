@@ -201,7 +201,6 @@ public static class ProjectSetup
         private static readonly Queue<string> PackagesToInstall = new();
         private static readonly Queue<string> AssetsToInstall = new();
 
-
         public static void FromAssetStore(string[] assets)
         {
             foreach (var asset in assets)
@@ -215,15 +214,33 @@ public static class ProjectSetup
             }
         }
 
-
         private static async void StartNextAssetImport()
         {
             while (AssetsToInstall.Count > 0)
             {
                 var assetPath = AssetsToInstall.Dequeue();
-                AssetDatabase.ImportPackage(assetPath, false);
+                var assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Unity", "Asset Store-5.x");
 
-                await Task.Delay(10); // Slight delay between each import
+                if (!Directory.Exists(assetsFolder))
+                {
+                    Debug.LogWarning($"Folder not found: {assetsFolder}. Please download asset '{assetPath.Split("/")[^1]}' from the Asset Store.");
+                    continue;
+                }
+
+                // Full path to the package in the Asset Store folder
+                var fullAssetPath = Combine(assetsFolder, assetPath);
+
+                if (File.Exists(fullAssetPath))
+                {
+                    AssetDatabase.ImportPackage(fullAssetPath, false);
+                    Debug.Log($"Imported asset from: {fullAssetPath}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Asset '{assetPath}' not found in '{assetsFolder}'. Please download it from the Asset Store.");
+                }
+
+                await Task.Delay(10); // Slight delay between each import to avoid potential conflicts
             }
         }
 
