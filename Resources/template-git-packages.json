@@ -1,0 +1,24 @@
+{
+    "packages": [
+        "solo-fsw/sosxr-unity-enhancedlogger",
+        "solo-fsw/sosxr-unity-swatchr",
+        "solo-fsw/sosxr-unity-additionalunityevents",
+        "solo-fsw/sosxr-unity-simplehelpers",
+        "solo-fsw/sosxr-unity-additionalgizmos",
+        "solo-fsw/sosxr-unity-editortools",
+        "solo-fsw/sosxr-unity-autosave",
+        "solo-fsw/sosxr-unity-buildhelpers",
+        "solo-fsw/sosxr-unity-extensionmethods",
+        "solo-fsw/sosxr-unity-scriptableobjectarchitecture",
+        "solo-fsw/sosxr-unity-timelineextensions",
+        "solo-fsw/sosxr-unity-readmehelpers",
+        "solo-fsw/sosxr-unity-markdownviewer",
+        "solo-fsw/sosxr-unity-ingamedebugconsole",
+        "yasirkula/UnityAssetUsageDetector",
+        "solo-fsw/sosxr-unity-assetdependency",
+        "arimger/Unity-Editor-Toolbox",
+        "XCharts-Team/XCharts",
+        "KyleBanks/scene-ref-attribute",
+        "immersivecognition/unity-experiment-framework"
+    ]
+}

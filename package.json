@@ -1,14 +1,16 @@
 {
-  "name": "com.sosxr.",
+  "name": "com.sosxr.projectsetup",
   "version": "1.0.0",
-  "displayName": "",
-  "description": "",
+  "displayName": "SOSXR Project Setup",
+  "description": "A package that sets up a new project with the essential settings and tools for SOSXR.",
   "unity": "2021.3",
   "dependencies": {
     
   },
   "keywords": [
-    "Unity"
+    "Unity",
+    "SOSXR",
+    "Project Setup"
   ],
   "author": {
     "name": "Maarten R. Struijk Wilbrink",
