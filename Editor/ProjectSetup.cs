@@ -35,13 +35,13 @@ public static class ProjectSetup
         CreateFolders();
         Debug.Log("Folders created successfully.");
 
-        ImportEssentialEditorTools();
+        await ImportEssentialEditorToolsAsync();
         Debug.Log("Editor assets import started.");
 
         await Import.CompleteAssetInstallation();
 
         // Import essential packages (combined from Unity and Git)
-        ImportEssentialPackages();
+        await ImportEssentialPackagesAsync();
         Debug.Log("Package import started.");
 
         await Import.CompletePackageInstallation();
@@ -50,15 +50,15 @@ public static class ProjectSetup
     }
 
 
-    private static void ImportEssentialEditorTools()
+    private static async Task ImportEssentialEditorToolsAsync()
     {
-        ImportAssetsFromJson("editor-assets");
+        await ImportAssetsFromJsonAsync("editor-assets");
     }
 
 
-    private static void ImportEssentialPackages()
+    private static async Task ImportEssentialPackagesAsync()
     {
-        ImportPackagesFromJson("packages"); // Import from the combined packages
+        await ImportPackagesFromJsonAsync("packages"); // Import from the combined packages
     }
 
 
@@ -75,31 +75,27 @@ public static class ProjectSetup
     }
 
 
-    private static void ImportAssetsFromJson(string fileName)
+    private static async Task ImportAssetsFromJsonAsync(string fileName)
     {
-        var file = Resources.Load<TextAsset>(fileName);
-
-        if (file == null)
-        {
-            Debug.LogError($"{fileName}.json not found in Resources folder.");
-
-            return;
-        }
-
-        var data = JsonUtility.FromJson<AssetList>(file.text);
-
-        if (data?.assets == null || data.assets.Length == 0)
-        {
-            Debug.LogError($"Nothing found in {fileName}.json.");
-
-            return;
-        }
-
-        Import.FromAssetStore(data.assets);
+        await Import.FromAssetStoreAsync(GetAssetsFromJson(fileName));
     }
 
 
-    private static void ImportPackagesFromJson(string fileName)
+    private static async Task ImportPackagesFromJsonAsync(string fileName)
+    {
+        var packages = GetPackagesFromJson(fileName);
+
+        // Split into Unity and Git packages based on naming convention
+        var unityPackages = packages.Where(p => p.StartsWith("com.")).ToArray();
+        var gitPackages = packages.Where(p => !p.StartsWith("com.")).ToArray();
+
+        // Import both Unity and Git packages
+        await Import.Packages(unityPackages);
+        await Import.Packages(ConstructGitUrls(gitPackages));
+    }
+
+
+    private static string[] GetPackagesFromJson(string fileName)
     {
         var file = Resources.Load<TextAsset>(fileName);
 
@@ -107,7 +103,7 @@ public static class ProjectSetup
         {
             Debug.LogError($"{fileName}.json not found in Resources folder.");
 
-            return;
+            return Array.Empty<string>();
         }
 
         var data = JsonUtility.FromJson<PackageList>(file.text);
@@ -116,22 +112,34 @@ public static class ProjectSetup
         {
             Debug.LogError($"Nothing found in {fileName}.json.");
 
-            return;
+            return Array.Empty<string>();
         }
 
-        // Split into Unity and Git packages based on naming convention
-        var unityPackages = data.packages.Where(p => p.StartsWith("com.")).ToArray();
-        var gitPackages = data.packages.Where(p => !p.StartsWith("com.")).ToArray();
-
-        // Import both Unity and Git packages
-        Import.Packages(unityPackages);
-        Import.Packages(ConstructGitUrls(gitPackages));
+        return data.packages;
     }
 
 
-    private static string[] ConstructGitUrls(string[] repos)
+    private static string[] GetAssetsFromJson(string fileName)
     {
-        return repos.Select(repo => $"https://github.com/{repo}.git").ToArray();
+        var file = Resources.Load<TextAsset>(fileName);
+
+        if (file == null)
+        {
+            Debug.LogError($"{fileName}.json not found in Resources folder.");
+
+            return Array.Empty<string>();
+        }
+
+        var data = JsonUtility.FromJson<AssetList>(file.text);
+
+        if (data?.assets == null || data.assets.Length == 0)
+        {
+            Debug.LogError($"Nothing found in {fileName}.json.");
+
+            return Array.Empty<string>();
+        }
+
+        return data.assets;
     }
 
 
@@ -155,6 +163,12 @@ public static class ProjectSetup
     }
 
 
+    private static string[] ConstructGitUrls(string[] repos)
+    {
+        return repos.Select(repo => $"https://github.com/{repo}.git").ToArray();
+    }
+
+
     [Serializable]
     private class PackageList
     {
@@ -174,9 +188,10 @@ public static class ProjectSetup
         private static AddRequest _request;
         private static readonly Queue<string> PackagesToInstall = new();
         private static readonly Queue<string> AssetsToInstall = new();
+        private static bool _isInstallationInProgress = false;
 
 
-        public static void FromAssetStore(string[] assets)
+        public static async Task FromAssetStoreAsync(string[] assets)
         {
             foreach (var asset in assets)
             {
@@ -185,12 +200,12 @@ public static class ProjectSetup
 
             if (AssetsToInstall.Count > 0)
             {
-                StartNextAssetImport();
+                await StartNextAssetImportAsync();
             }
         }
 
 
-        private static async void StartNextAssetImport()
+        private static async Task StartNextAssetImportAsync()
         {
             while (AssetsToInstall.Count > 0)
             {
@@ -234,37 +249,40 @@ public static class ProjectSetup
         }
 
 
-        public static void Packages(string[] packages)
+        public static async Task Packages(string[] packages)
         {
             foreach (var package in packages)
             {
                 PackagesToInstall.Enqueue(package);
             }
 
-            if (PackagesToInstall.Count > 0)
+            if (!_isInstallationInProgress)
             {
-                StartNextPackageInstallation();
+                await StartNextPackageInstallation();
             }
         }
 
 
-        private static void StartNextPackageInstallation()
+        private static async Task StartNextPackageInstallation()
         {
-            if (PackagesToInstall.Count == 0)
+            _isInstallationInProgress = true;
+
+            while (PackagesToInstall.Count > 0)
             {
-                return;
+                var packageToInstall = PackagesToInstall.Dequeue();
+                _request = Client.Add(packageToInstall);
+                await MonitorPackageInstall();
             }
 
-            _request = Client.Add(PackagesToInstall.Dequeue());
-            EditorApplication.update += MonitorPackageInstall;
+            _isInstallationInProgress = false;
         }
 
 
-        private static void MonitorPackageInstall()
+        private static async Task MonitorPackageInstall()
         {
-            if (_request == null || !_request.IsCompleted)
+            while (_request != null && !_request.IsCompleted)
             {
-                return;
+                await Task.Delay(100);
             }
 
             // Check request result
@@ -277,29 +295,24 @@ public static class ProjectSetup
                 Debug.LogError(_request.Error.message);
             }
 
-            EditorApplication.update -= MonitorPackageInstall;
             _request = null;
-
-            // Call to start the next installation
-            StartNextPackageInstallation();
         }
 
 
         public static async Task CompleteAssetInstallation()
         {
-            while (AssetsToInstall.Count > 0)
+            while (AssetsToInstall.Count > 0 || _isInstallationInProgress)
             {
-                await Task.Delay(10);
+                await Task.Delay(100);
             }
         }
 
 
         public static async Task CompletePackageInstallation()
         {
-            // Wait until all packages are installed
-            while (PackagesToInstall.Count > 0 || _request != null)
+            while (PackagesToInstall.Count > 0 || _isInstallationInProgress)
             {
-                await Task.Delay(10);
+                await Task.Delay(100);
             }
         }
     }
