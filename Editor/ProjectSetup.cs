@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using static System.IO.Path;
-
 
 public static class ProjectSetup
 {
@@ -21,12 +21,11 @@ public static class ProjectSetup
             Folders.Create(targetFolder);
         }
 
-        CreateJsonFromTemplate("template-packages", targetFolder, "packages.json"); // Unified JSON for packages
+        CreateJsonFromTemplate("template-packages", targetFolder, "packages.json"); // Combined package template
         CreateJsonFromTemplate("template-editor-assets", targetFolder, "editor-assets.json");
 
         AssetDatabase.Refresh();
     }
-
 
     [MenuItem("SOSXR/Setup/Run Full Project Setup")]
     public static async void RunFullProjectSetup()
@@ -39,7 +38,8 @@ public static class ProjectSetup
 
         await Import.CompleteAssetInstallation();
 
-        ImportEssentialPackages(); // Import from unified JSON file
+        // Import essential packages (combined from Unity and Git)
+        ImportEssentialPackages();
         Debug.Log("Package import started.");
 
         await Import.CompletePackageInstallation();
@@ -47,18 +47,15 @@ public static class ProjectSetup
         Debug.Log("Full project setup completed successfully.");
     }
 
-
     private static void ImportEssentialEditorTools()
     {
         ImportAssetsFromJson("editor-assets");
     }
 
-
     private static void ImportEssentialPackages()
     {
-        ImportPackagesFromJson("packages"); // Import from unified JSON
+        ImportPackagesFromJson("packages"); // Import from the combined packages
     }
-
 
     private static void CreateFolders()
     {
@@ -72,7 +69,6 @@ public static class ProjectSetup
         AssetDatabase.Refresh();
     }
 
-
     private static void ImportAssetsFromJson(string fileName)
     {
         var file = Resources.Load<TextAsset>(fileName);
@@ -80,7 +76,6 @@ public static class ProjectSetup
         if (file == null)
         {
             Debug.LogError($"{fileName}.json not found in Resources folder.");
-
             return;
         }
 
@@ -89,13 +84,11 @@ public static class ProjectSetup
         if (data?.assets == null || data.assets.Length == 0)
         {
             Debug.LogError($"Nothing found in {fileName}.json.");
-
             return;
         }
 
         Import.FromAssetStore(data.assets);
     }
-
 
     private static void ImportPackagesFromJson(string fileName)
     {
@@ -104,22 +97,30 @@ public static class ProjectSetup
         if (file == null)
         {
             Debug.LogError($"{fileName}.json not found in Resources folder.");
-
             return;
         }
 
-        var data = JsonUtility.FromJson<CombinedPackageList>(file.text);
+        var data = JsonUtility.FromJson<PackageList>(file.text);
 
         if (data?.packages == null || data.packages.Length == 0)
         {
             Debug.LogError($"Nothing found in {fileName}.json.");
-
             return;
         }
 
-        Import.Packages(data.packages);
+        // Split into Unity and Git packages based on naming convention
+        var unityPackages = data.packages.Where(p => p.StartsWith("com.")).ToArray();
+        var gitPackages = data.packages.Where(p => !p.StartsWith("com.")).ToArray();
+
+        // Import both Unity and Git packages
+        Import.Packages(unityPackages);
+        Import.Packages(ConstructGitUrls(gitPackages));
     }
 
+    private static string[] ConstructGitUrls(string[] repos)
+    {
+        return repos.Select(repo => $"https://github.com/{repo}.git").ToArray();
+    }
 
     private static void CreateJsonFromTemplate(string templateName, string targetFolder, string newFileName)
     {
@@ -128,7 +129,6 @@ public static class ProjectSetup
         if (template == null)
         {
             Debug.LogError($"Template '{templateName}' not found in Resources folder.");
-
             return;
         }
 
@@ -140,13 +140,11 @@ public static class ProjectSetup
         AssetDatabase.Refresh();
     }
 
-
     [Serializable]
-    private class CombinedPackageList
+    private class PackageList
     {
-        public string[] packages; // This now includes both Unity and Git packages.
+        public string[] packages;
     }
-
 
     [Serializable]
     private class AssetList
@@ -154,13 +152,11 @@ public static class ProjectSetup
         public string[] assets;
     }
 
-
     private static class Import
     {
         private static AddRequest _request;
         private static readonly Queue<string> PackagesToInstall = new();
         private static readonly Queue<string> AssetsToInstall = new();
-
 
         public static void FromAssetStore(string[] assets)
         {
@@ -174,7 +170,6 @@ public static class ProjectSetup
                 StartNextAssetImport();
             }
         }
-
 
         private static async void StartNextAssetImport()
         {
@@ -199,11 +194,9 @@ public static class ProjectSetup
                 if (!Directory.Exists(assetsFolder))
                 {
                     Debug.LogWarning($"Folder not found: {assetsFolder}. Please download asset '{assetPath.Split("/")[^1]}' from the Asset Store.");
-
                     continue;
                 }
 
-                // Full path to the package in the Asset Store folder
                 var fullAssetPath = Combine(assetsFolder, assetPath);
 
                 if (File.Exists(fullAssetPath))
@@ -220,7 +213,6 @@ public static class ProjectSetup
             }
         }
 
-
         public static void Packages(string[] packages)
         {
             foreach (var package in packages)
@@ -234,7 +226,6 @@ public static class ProjectSetup
             }
         }
 
-
         private static void StartNextPackageInstallation()
         {
             if (PackagesToInstall.Count == 0)
@@ -245,7 +236,6 @@ public static class ProjectSetup
             _request = Client.Add(PackagesToInstall.Dequeue());
             EditorApplication.update += MonitorPackageInstall;
         }
-
 
         private static void MonitorPackageInstall()
         {
@@ -277,7 +267,6 @@ public static class ProjectSetup
             };
         }
 
-
         public static async Task CompleteAssetInstallation()
         {
             while (AssetsToInstall.Count > 0)
@@ -285,7 +274,6 @@ public static class ProjectSetup
                 await Task.Delay(10);
             }
         }
-
 
         public static async Task CompletePackageInstallation()
         {
@@ -295,7 +283,6 @@ public static class ProjectSetup
             }
         }
     }
-
 
     private static class Folders
     {
@@ -314,7 +301,6 @@ public static class ProjectSetup
             }
         }
 
-
         private static void CreateSubFolders(string rootPath, string folderHierarchy)
         {
             var currentPath = rootPath;
@@ -330,7 +316,6 @@ public static class ProjectSetup
             }
         }
 
-
         public static void Move(string folderName, string destination)
         {
             var sourcePath = $"Assets/{folderName}";
@@ -344,18 +329,17 @@ public static class ProjectSetup
 
             if (!string.IsNullOrEmpty(error))
             {
-                Debug.LogWarning($"Failed to move {folderName}: {error}");
+                Debug.LogError(error);
             }
         }
 
-
         public static void Delete(string folderName)
         {
-            var pathToDelete = $"Assets/{folderName}";
+            var path = $"Assets/{folderName}";
 
-            if (AssetDatabase.IsValidFolder(pathToDelete))
+            if (AssetDatabase.IsValidFolder(path))
             {
-                AssetDatabase.DeleteAsset(pathToDelete);
+                AssetDatabase.DeleteAsset(path);
             }
         }
     }
