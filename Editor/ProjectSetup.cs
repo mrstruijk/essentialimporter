@@ -9,6 +9,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using static System.IO.Path;
 
+
 public static class ProjectSetup
 {
     [MenuItem("SOSXR/Setup/Create JSON Templates")]
@@ -26,6 +27,7 @@ public static class ProjectSetup
 
         AssetDatabase.Refresh();
     }
+
 
     [MenuItem("SOSXR/Setup/Run Full Project Setup")]
     public static async void RunFullProjectSetup()
@@ -47,15 +49,18 @@ public static class ProjectSetup
         Debug.Log("Full project setup completed successfully.");
     }
 
+
     private static void ImportEssentialEditorTools()
     {
         ImportAssetsFromJson("editor-assets");
     }
 
+
     private static void ImportEssentialPackages()
     {
         ImportPackagesFromJson("packages"); // Import from the combined packages
     }
+
 
     private static void CreateFolders()
     {
@@ -69,6 +74,7 @@ public static class ProjectSetup
         AssetDatabase.Refresh();
     }
 
+
     private static void ImportAssetsFromJson(string fileName)
     {
         var file = Resources.Load<TextAsset>(fileName);
@@ -76,6 +82,7 @@ public static class ProjectSetup
         if (file == null)
         {
             Debug.LogError($"{fileName}.json not found in Resources folder.");
+
             return;
         }
 
@@ -84,11 +91,13 @@ public static class ProjectSetup
         if (data?.assets == null || data.assets.Length == 0)
         {
             Debug.LogError($"Nothing found in {fileName}.json.");
+
             return;
         }
 
         Import.FromAssetStore(data.assets);
     }
+
 
     private static void ImportPackagesFromJson(string fileName)
     {
@@ -97,6 +106,7 @@ public static class ProjectSetup
         if (file == null)
         {
             Debug.LogError($"{fileName}.json not found in Resources folder.");
+
             return;
         }
 
@@ -105,6 +115,7 @@ public static class ProjectSetup
         if (data?.packages == null || data.packages.Length == 0)
         {
             Debug.LogError($"Nothing found in {fileName}.json.");
+
             return;
         }
 
@@ -117,10 +128,12 @@ public static class ProjectSetup
         Import.Packages(ConstructGitUrls(gitPackages));
     }
 
+
     private static string[] ConstructGitUrls(string[] repos)
     {
         return repos.Select(repo => $"https://github.com/{repo}.git").ToArray();
     }
+
 
     private static void CreateJsonFromTemplate(string templateName, string targetFolder, string newFileName)
     {
@@ -129,6 +142,7 @@ public static class ProjectSetup
         if (template == null)
         {
             Debug.LogError($"Template '{templateName}' not found in Resources folder.");
+
             return;
         }
 
@@ -140,11 +154,13 @@ public static class ProjectSetup
         AssetDatabase.Refresh();
     }
 
+
     [Serializable]
     private class PackageList
     {
         public string[] packages;
     }
+
 
     [Serializable]
     private class AssetList
@@ -152,11 +168,13 @@ public static class ProjectSetup
         public string[] assets;
     }
 
+
     private static class Import
     {
         private static AddRequest _request;
         private static readonly Queue<string> PackagesToInstall = new();
         private static readonly Queue<string> AssetsToInstall = new();
+
 
         public static void FromAssetStore(string[] assets)
         {
@@ -170,6 +188,7 @@ public static class ProjectSetup
                 StartNextAssetImport();
             }
         }
+
 
         private static async void StartNextAssetImport()
         {
@@ -194,6 +213,7 @@ public static class ProjectSetup
                 if (!Directory.Exists(assetsFolder))
                 {
                     Debug.LogWarning($"Folder not found: {assetsFolder}. Please download asset '{assetPath.Split("/")[^1]}' from the Asset Store.");
+
                     continue;
                 }
 
@@ -213,6 +233,7 @@ public static class ProjectSetup
             }
         }
 
+
         public static void Packages(string[] packages)
         {
             foreach (var package in packages)
@@ -226,6 +247,7 @@ public static class ProjectSetup
             }
         }
 
+
         private static void StartNextPackageInstallation()
         {
             if (PackagesToInstall.Count == 0)
@@ -236,6 +258,7 @@ public static class ProjectSetup
             _request = Client.Add(PackagesToInstall.Dequeue());
             EditorApplication.update += MonitorPackageInstall;
         }
+
 
         private static void MonitorPackageInstall()
         {
@@ -257,15 +280,10 @@ public static class ProjectSetup
             EditorApplication.update -= MonitorPackageInstall;
             _request = null;
 
-            // Add a delay before starting the next installation
-            EditorApplication.delayCall += () =>
-            {
-                if (PackagesToInstall.Count > 0)
-                {
-                    StartNextPackageInstallation();
-                }
-            };
+            // Call to start the next installation
+            StartNextPackageInstallation();
         }
+
 
         public static async Task CompleteAssetInstallation()
         {
@@ -275,14 +293,17 @@ public static class ProjectSetup
             }
         }
 
+
         public static async Task CompletePackageInstallation()
         {
-            while (PackagesToInstall.Count > 0)
+            // Wait until all packages are installed
+            while (PackagesToInstall.Count > 0 || _request != null)
             {
                 await Task.Delay(10);
             }
         }
     }
+
 
     private static class Folders
     {
@@ -301,6 +322,7 @@ public static class ProjectSetup
             }
         }
 
+
         private static void CreateSubFolders(string rootPath, string folderHierarchy)
         {
             var currentPath = rootPath;
@@ -315,6 +337,7 @@ public static class ProjectSetup
                 }
             }
         }
+
 
         public static void Move(string folderName, string destination)
         {
@@ -332,6 +355,7 @@ public static class ProjectSetup
                 Debug.LogError(error);
             }
         }
+
 
         public static void Delete(string folderName)
         {
