@@ -1,6 +1,7 @@
 {
     "packages": [
         "com.unity.modules.imageconversion",
+        "com.unity.mathematics",
         "com.unity.mobile.android-logcat",
         "com.unity.animation.rigging",
         "com.unity.cinemachine",
