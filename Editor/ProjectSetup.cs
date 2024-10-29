@@ -25,11 +25,11 @@ public static class ProjectSetup
         CreateJsonFromTemplate("template-unity-packages", targetFolder, "unity-packages.json");
         CreateJsonFromTemplate("template-editor-assets", targetFolder, "editor-assets.json");
         CreateJsonFromTemplate("template-git-packages", targetFolder, "git-packages.json");
-        
+
         AssetDatabase.Refresh();
     }
 
-    
+
     [MenuItem("SOSXR/Setup/Run Full Project Setup")]
     public static async void RunFullProjectSetup()
     {
@@ -38,13 +38,13 @@ public static class ProjectSetup
 
         ImportEssentialEditorTools();
         Debug.Log("Editor assets import started.");
-        
+
         await Import.CompleteAssetInstallation();
-        
+
         ImportEssentialUnityPackages();
         ImportEssentialGitPackages();
         Debug.Log("Unity and Git package import started.");
-        
+
         await Import.CompletePackageInstallation();
 
         Debug.Log("Full project setup completed successfully.");
@@ -80,7 +80,6 @@ public static class ProjectSetup
         AssetDatabase.DeleteAsset("Assets/Readme.asset");
         AssetDatabase.Refresh();
     }
-
 
 
     private static void ImportAssetsFromJson(string fileName)
@@ -201,6 +200,7 @@ public static class ProjectSetup
         private static readonly Queue<string> PackagesToInstall = new();
         private static readonly Queue<string> AssetsToInstall = new();
 
+
         public static void FromAssetStore(string[] assets)
         {
             foreach (var asset in assets)
@@ -214,16 +214,31 @@ public static class ProjectSetup
             }
         }
 
+
         private static async void StartNextAssetImport()
         {
             while (AssetsToInstall.Count > 0)
             {
                 var assetPath = AssetsToInstall.Dequeue();
-                var assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Unity", "Asset Store-5.x");
+                string assetsFolder;
+
+                if (Application.platform == RuntimePlatform.OSXEditor)
+                {
+                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "Library/Unity/Asset Store-5.x");
+                }
+                else if (Application.platform == RuntimePlatform.WindowsEditor)
+                {
+                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Unity/Asset Store-5.x");
+                }
+                else // Default to Linux path for completeness
+                {
+                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Unity/Asset Store-5.x");
+                }
 
                 if (!Directory.Exists(assetsFolder))
                 {
                     Debug.LogWarning($"Folder not found: {assetsFolder}. Please download asset '{assetPath.Split("/")[^1]}' from the Asset Store.");
+
                     continue;
                 }
 
