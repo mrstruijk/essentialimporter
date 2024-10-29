@@ -274,33 +274,47 @@ public static class ProjectSetup
         }
 
 
-        private static async void StartNextPackageInstallation()
+        private static void StartNextPackageInstallation()
         {
-            while (PackagesToInstall.Count > 0)
+            if (PackagesToInstall.Count == 0)
             {
-                _request = Client.Add(PackagesToInstall.Dequeue());
-
-                // Wait for the current package installation to complete
-                while (!_request.IsCompleted)
-                {
-                    await Task.Delay(10); // Polling delay to avoid overloading
-                }
-
-                // Check if the package was installed successfully
-                if (_request.Status == StatusCode.Success)
-                {
-                    Debug.Log($"Installed: {_request.Result.packageId}");
-                }
-                else if (_request.Status >= StatusCode.Failure)
-                {
-                    Debug.LogError(_request.Error.message);
-                }
-
-                // Adding a delay before the next package installation to avoid conflicts
-                await Task.Delay(500);
+                return;
             }
+
+            _request = Client.Add(PackagesToInstall.Dequeue());
+            EditorApplication.update += MonitorPackageInstall;
         }
 
+
+        private static void MonitorPackageInstall()
+        {
+            if (_request == null || !_request.IsCompleted)
+            {
+                return;
+            }
+
+            // Check request result
+            if (_request.Status == StatusCode.Success)
+            {
+                Debug.Log($"Installed: {_request.Result.packageId}");
+            }
+            else if (_request.Status >= StatusCode.Failure)
+            {
+                Debug.LogError(_request.Error.message);
+            }
+
+            EditorApplication.update -= MonitorPackageInstall;
+            _request = null;
+
+            // Add a delay before starting the next installation
+            EditorApplication.delayCall += () =>
+            {
+                if (PackagesToInstall.Count > 0)
+                {
+                    StartNextPackageInstallation();
+                }
+            };
+        }
 
 
         public static async Task CompleteAssetInstallation()
