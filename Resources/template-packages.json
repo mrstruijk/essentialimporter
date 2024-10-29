@@ -11,11 +11,9 @@
         "com.unity.timeline",
         "com.unity.cloud.gltfast",
         "com.unity.nuget.newtonsoft-json",
-        "com.unity.inputsystem",
         "solo-fsw/sosxr-unity-enhancedlogger",
         "solo-fsw/sosxr-unity-swatchr",
         "solo-fsw/sosxr-unity-additionalunityevents",
-        "solo-fsw/sosxr-unity-simplehelpers",
         "solo-fsw/sosxr-unity-additionalgizmos",
         "solo-fsw/sosxr-unity-editortools",
         "solo-fsw/sosxr-unity-autosave",
@@ -31,6 +29,7 @@
         "arimger/Unity-Editor-Toolbox",
         "XCharts-Team/XCharts",
         "KyleBanks/scene-ref-attribute",
-        "immersivecognition/unity-experiment-framework"
+        "immersivecognition/unity-experiment-framework",
+        "com.unity.inputsystem" 
     ]
 }
