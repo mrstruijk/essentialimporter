@@ -15,7 +15,7 @@ public static class ProjectSetup
     [MenuItem("SOSXR/Setup/Create JSON Templates")]
     private static void CreateJsonFromTemplates()
     {
-        const string targetFolder = "Assets/_SOSXR/Resources";
+        const string targetFolder = "/_SOSXR/Resources";
 
         if (!Directory.Exists(targetFolder))
         {
@@ -25,6 +25,8 @@ public static class ProjectSetup
         CreateJsonFromTemplate("template-unity-packages", targetFolder, "unity-packages.json");
         CreateJsonFromTemplate("template-editor-assets", targetFolder, "editor-assets.json");
         CreateJsonFromTemplate("template-git-packages", targetFolder, "git-packages.json");
+        
+        AssetDatabase.Refresh();
     }
 
     
