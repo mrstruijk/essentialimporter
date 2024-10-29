@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.PackageManager;
@@ -22,9 +21,8 @@ public static class ProjectSetup
             Folders.Create(targetFolder);
         }
 
-        CreateJsonFromTemplate("template-unity-packages", targetFolder, "unity-packages.json");
+        CreateJsonFromTemplate("template-packages", targetFolder, "packages.json"); // Unified JSON for packages
         CreateJsonFromTemplate("template-editor-assets", targetFolder, "editor-assets.json");
-        CreateJsonFromTemplate("template-git-packages", targetFolder, "git-packages.json");
 
         AssetDatabase.Refresh();
     }
@@ -41,9 +39,8 @@ public static class ProjectSetup
 
         await Import.CompleteAssetInstallation();
 
-        ImportEssentialUnityPackages();
-        ImportEssentialGitPackages();
-        Debug.Log("Unity and Git package import started.");
+        ImportEssentialPackages(); // Import from unified JSON file
+        Debug.Log("Package import started.");
 
         await Import.CompletePackageInstallation();
 
@@ -57,15 +54,9 @@ public static class ProjectSetup
     }
 
 
-    private static void ImportEssentialUnityPackages()
+    private static void ImportEssentialPackages()
     {
-        ImportPackagesFromJson("unity-packages");
-    }
-
-
-    private static void ImportEssentialGitPackages()
-    {
-        ImportPackagesFromGit("git-packages");
+        ImportPackagesFromJson("packages"); // Import from unified JSON
     }
 
 
@@ -117,7 +108,7 @@ public static class ProjectSetup
             return;
         }
 
-        var data = JsonUtility.FromJson<PackageList>(file.text);
+        var data = JsonUtility.FromJson<CombinedPackageList>(file.text);
 
         if (data?.packages == null || data.packages.Length == 0)
         {
@@ -127,36 +118,6 @@ public static class ProjectSetup
         }
 
         Import.Packages(data.packages);
-    }
-
-
-    private static void ImportPackagesFromGit(string fileName)
-    {
-        var file = Resources.Load<TextAsset>(fileName);
-
-        if (file == null)
-        {
-            Debug.LogError($"{fileName}.json not found in Resources folder.");
-
-            return;
-        }
-
-        var data = JsonUtility.FromJson<PackageList>(file.text);
-
-        if (data?.packages == null || data.packages.Length == 0)
-        {
-            Debug.LogError($"Nothing found in {fileName}.json.");
-
-            return;
-        }
-
-        Import.Packages(ConstructGitUrls(data.packages));
-    }
-
-
-    private static string[] ConstructGitUrls(string[] repos)
-    {
-        return repos.Select(repo => $"https://github.com/{repo}.git").ToArray();
     }
 
 
@@ -181,9 +142,9 @@ public static class ProjectSetup
 
 
     [Serializable]
-    private class PackageList
+    private class CombinedPackageList
     {
-        public string[] packages;
+        public string[] packages; // This now includes both Unity and Git packages.
     }
 
 

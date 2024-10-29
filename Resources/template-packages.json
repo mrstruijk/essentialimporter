@@ -1,5 +1,16 @@
 {
     "packages": [
+        "com.unity.mobile.android-logcat",
+        "com.unity.animation.rigging",
+        "com.unity.cinemachine",
+        "com.unity.editorcoroutines",
+        "com.unity.ide.rider",
+        "com.unity.xr.openxr",
+        "com.unity.textmeshpro",
+        "com.unity.timeline",
+        "com.unity.cloud.gltfast",
+        "com.unity.nuget.newtonsoft-json",
+        "com.unity.inputsystem",
         "solo-fsw/sosxr-unity-enhancedlogger",
         "solo-fsw/sosxr-unity-swatchr",
         "solo-fsw/sosxr-unity-additionalunityevents",
