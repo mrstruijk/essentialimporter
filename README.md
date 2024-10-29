@@ -17,4 +17,4 @@
 ## Known issues
 - Add Simple Helpers (fix)
 - Add InGameDebugConsole (fix)
-- Add UMotion (dont know how to fix)
+- Add UMotion (dont know how to fix) ( re add "Soxware Interactive/Editor ExtensionsAnimation/UMotion Pro - Animation Editor.unitypackage")
