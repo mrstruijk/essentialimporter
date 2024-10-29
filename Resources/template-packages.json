@@ -10,7 +10,6 @@
         "com.unity.textmeshpro",
         "com.unity.timeline",
         "com.unity.cloud.gltfast",
-        "com.unity.nuget.newtonsoft-json",
         "solo-fsw/sosxr-unity-enhancedlogger",
         "solo-fsw/sosxr-unity-swatchr",
         "solo-fsw/sosxr-unity-additionalunityevents",
@@ -30,6 +29,7 @@
         "XCharts-Team/XCharts",
         "KyleBanks/scene-ref-attribute",
         "immersivecognition/unity-experiment-framework",
+        "com.unity.nuget.newtonsoft-json",
         "com.unity.inputsystem" 
     ]
 }
