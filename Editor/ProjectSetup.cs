@@ -15,7 +15,7 @@ public static class ProjectSetup
     [MenuItem("SOSXR/Setup/Create JSON Templates")]
     private static void CreateJsonFromTemplates()
     {
-        const string targetFolder = "/_SOSXR/Resources";
+        const string targetFolder = "_SOSXR/Resources";
 
         if (!Directory.Exists(targetFolder))
         {
