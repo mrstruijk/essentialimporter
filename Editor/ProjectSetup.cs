@@ -276,28 +276,31 @@ public static class ProjectSetup
 
         private static async void StartNextPackageInstallation()
         {
-            _request = Client.Add(PackagesToInstall.Dequeue());
+            while (PackagesToInstall.Count > 0)
+            {
+                _request = Client.Add(PackagesToInstall.Dequeue());
 
-            while (!_request.IsCompleted)
-            {
-                await Task.Delay(10);
-            }
+                // Wait for the current package installation to complete
+                while (!_request.IsCompleted)
+                {
+                    await Task.Delay(10); // Polling delay to avoid overloading
+                }
 
-            if (_request.Status == StatusCode.Success)
-            {
-                Debug.Log($"Installed: {_request.Result.packageId}");
-            }
-            else if (_request.Status >= StatusCode.Failure)
-            {
-                Debug.LogError(_request.Error.message);
-            }
+                // Check if the package was installed successfully
+                if (_request.Status == StatusCode.Success)
+                {
+                    Debug.Log($"Installed: {_request.Result.packageId}");
+                }
+                else if (_request.Status >= StatusCode.Failure)
+                {
+                    Debug.LogError(_request.Error.message);
+                }
 
-            if (PackagesToInstall.Count > 0)
-            {
-                await Task.Delay(1000);
-                StartNextPackageInstallation();
+                // Adding a delay before the next package installation to avoid conflicts
+                await Task.Delay(500);
             }
         }
+
 
 
         public static async Task CompleteAssetInstallation()
