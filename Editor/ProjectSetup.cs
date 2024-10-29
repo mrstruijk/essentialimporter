@@ -12,29 +12,62 @@ using static System.IO.Path;
 
 public static class ProjectSetup
 {
-    [MenuItem("SOSXR/Setup/Import Essential Editor Tools")]
+    [MenuItem("SOSXR/Setup/Create JSON Templates")]
+    private static void CreateJsonFromTemplates()
+    {
+        const string targetFolder = "Assets/_SOSXR/Resources";
+
+        if (!Directory.Exists(targetFolder))
+        {
+            Folders.Create(targetFolder);
+        }
+
+        CreateJsonFromTemplate("template-unity-packages", targetFolder, "unity-packages.json");
+        CreateJsonFromTemplate("template-editor-assets", targetFolder, "editor-assets.json");
+        CreateJsonFromTemplate("template-git-packages", targetFolder, "git-packages.json");
+    }
+
+    
+    [MenuItem("SOSXR/Setup/Run Full Project Setup")]
+    public static async void RunFullProjectSetup()
+    {
+        CreateFolders();
+        Debug.Log("Folders created successfully.");
+
+        ImportEssentialEditorTools();
+        Debug.Log("Editor assets import started.");
+        
+        await Import.CompleteAssetInstallation();
+        
+        ImportEssentialUnityPackages();
+        ImportEssentialGitPackages();
+        Debug.Log("Unity and Git package import started.");
+        
+        await Import.CompletePackageInstallation();
+
+        Debug.Log("Full project setup completed successfully.");
+    }
+
+
     private static void ImportEssentialEditorTools()
     {
         ImportAssetsFromJson("editor-assets");
     }
 
 
-    [MenuItem("SOSXR/Setup/Install Essential Unity Packages")]
-    public static void ImportEssentialUnityPackages()
+    private static void ImportEssentialUnityPackages()
     {
         ImportPackagesFromJson("unity-packages");
     }
 
 
-    [MenuItem("SOSXR/Setup/Install Essential Git Packages")]
-    public static void ImportEssentialGitPackages()
+    private static void ImportEssentialGitPackages()
     {
         ImportPackagesFromGit("git-packages");
     }
 
 
-    [MenuItem("SOSXR/Setup/CreateFolders")]
-    public static void CreateFolders()
+    private static void CreateFolders()
     {
         Folders.Create("_SOSXR/Scripts", "_SOSXR/Textures & Materials", "_SOSXR/Models", "_SOSXR/Animation", "_SOSXR/Prefabs", "_SOSXR/Swatches", "_SOSXR/Rendering", "_SOSXR/XR", "_SOSXR/Input");
         Folders.Move("Scenes", "_SOSXR");
@@ -46,21 +79,6 @@ public static class ProjectSetup
         AssetDatabase.Refresh();
     }
 
-
-    [MenuItem("SOSXR/Setup/Create Package Lists From Template")]
-    public static void CreateJsonFromTemplates()
-    {
-        const string targetFolder = "Assets/_SOSXR/Resources";
-
-        if (!Directory.Exists(targetFolder))
-        {
-            
-        }
-        Folders.Create(targetFolder);
-        CreateJsonFromTemplate("template-unity-packages", targetFolder, "unity-packages.json");
-        CreateJsonFromTemplate("template-editor-assets", targetFolder, "editor-assets.json");
-        CreateJsonFromTemplate("template-git-packages", targetFolder, "git-packages.json");
-    }
 
 
     private static void ImportAssetsFromJson(string fileName)
@@ -179,26 +197,32 @@ public static class ProjectSetup
     {
         private static AddRequest _request;
         private static readonly Queue<string> PackagesToInstall = new();
+        private static readonly Queue<string> AssetsToInstall = new();
 
 
         public static void FromAssetStore(string[] assets)
         {
-            Array.ForEach(assets, FromAssetStore);
+            foreach (var asset in assets)
+            {
+                AssetsToInstall.Enqueue(asset);
+            }
+
+            if (AssetsToInstall.Count > 0)
+            {
+                StartNextAssetImport();
+            }
         }
 
 
-        private static void FromAssetStore(string path)
+        private static async void StartNextAssetImport()
         {
-            var assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Unity/Asset Store-5.x");
-
-            if (!Directory.Exists(assetsFolder))
+            while (AssetsToInstall.Count > 0)
             {
-                Debug.LogWarning($"Folder not found: {assetsFolder}. Please download asset '{path.Split("/")[^1]}' from Asset Store.");
+                var assetPath = AssetsToInstall.Dequeue();
+                AssetDatabase.ImportPackage(assetPath, false);
 
-                return;
+                await Task.Delay(10); // Slight delay between each import
             }
-
-            AssetDatabase.ImportPackage(Combine(assetsFolder, path), false);
         }
 
 
@@ -238,6 +262,24 @@ public static class ProjectSetup
             {
                 await Task.Delay(1000);
                 StartNextPackageInstallation();
+            }
+        }
+
+
+        public static async Task CompleteAssetInstallation()
+        {
+            while (AssetsToInstall.Count > 0)
+            {
+                await Task.Delay(10);
+            }
+        }
+
+
+        public static async Task CompletePackageInstallation()
+        {
+            while (PackagesToInstall.Count > 0)
+            {
+                await Task.Delay(10);
             }
         }
     }
