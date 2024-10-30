@@ -7,7 +7,6 @@
         "com.unity.cinemachine",
         "com.unity.editorcoroutines",
         "com.unity.ide.rider",
-        "com.unity.xr.openxr",
         "com.unity.textmeshpro",
         "com.unity.timeline",
         "com.unity.cloud.gltfast",
@@ -30,6 +29,7 @@
         "KyleBanks/scene-ref-attribute",
         "immersivecognition/unity-experiment-framework",
         "com.unity.nuget.newtonsoft-json",
+        "com.unity.xr.openxr",
         "com.unity.inputsystem" 
     ]
 }
