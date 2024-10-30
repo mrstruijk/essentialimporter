@@ -19,3 +19,4 @@
 - Add InGameDebugConsole (fix)
 - Add UMotion (dont know how to fix) ( re add "Soxware Interactive/Editor ExtensionsAnimation/UMotion Pro - Animation Editor.unitypackage")
 - Unable to add package [https://github.com/arimger/Unity-Editor-Toolbox.git]: [https://github.com/arimger/Unity-Editor-Toolbox.git] does not point to a valid package. No package manifest was found.
+- UXF as package
