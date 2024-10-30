@@ -15,7 +15,6 @@
 
 ## Known issues
 - Add Simple Helpers (fix)
-- Add UMotion (dont know how to fix) ( re add "Soxware Interactive/Editor ExtensionsAnimation/UMotion Pro - Animation Editor.unitypackage")
 
 https://github.com/mrstruijk/essentialimporter.git
 
@@ -33,7 +32,8 @@ https://github.com/mrstruijk/essentialimporter.git
     "com.sosxr.enhancedlogger": "https://github.com/solo-fsw/sosxr-unity-enhancedlogger.git",
     "com.sosxr.extendingtimeline": "https://github.com/solo-fsw/sosxr-unity-timelineextensions.git",
     "com.sosxr.readmehelpers": "https://github.com/solo-fsw/sosxr-unity-readmehelpers.git",
-    "com.sosxr.simplehelpers": "https://github.com/solo-fsw/sosxr-unity-extensionmethods.git",
+    "com.sosxr.extensionmethods": "https://github.com/solo-fsw/sosxr-unity-extensionmethods.git",
+    "com.sosxr.simplehelpers": "https://github.com/solo-fsw/sosxr-unity-simplehelpers.git",
     "com.swatchr": "https://github.com/solo-fsw/sosxr-unity-swatchr.git",
     "com.tarodev.autosave": "https://github.com/solo-fsw/sosxr-unity-autosave.git",
     "com.yasirkula.ingamedebugconsole": "https://github.com/solo-fsw/sosxr-unity-ingamedebugconsole.git",
@@ -42,3 +42,4 @@ https://github.com/mrstruijk/essentialimporter.git
 ```
 
 Install [UXF](https://github.com/immersivecognition/unity-experiment-framework/releases/latest)
+
