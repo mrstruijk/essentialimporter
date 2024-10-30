@@ -1,6 +1,6 @@
 {
   "name": "com.sosxr.essentialimporter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Essential Importer",
   "description": "A package that sets up a new project with the essential settings and tools for SOSXR.",
   "unity": "2021.3",
