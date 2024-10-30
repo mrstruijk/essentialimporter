@@ -39,7 +39,6 @@ https://github.com/mrstruijk/essentialimporter.git
     "com.yasirkula.ingamedebugconsole": "https://github.com/solo-fsw/sosxr-unity-ingamedebugconsole.git",
     "com.unity.cloud.gltfast": "6.8.0",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
-    "com.unity.modules.imageconversion": "1.0.0"
 ```
 
 Install [UXF](https://github.com/immersivecognition/unity-experiment-framework/releases/latest)
