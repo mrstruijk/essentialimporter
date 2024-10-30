@@ -1,14 +1,12 @@
 {
     "packages": [
+        "com.unity.burst",
         "com.unity.modules.imageconversion",
         "com.unity.mathematics",
         "com.unity.mobile.android-logcat",
-        "com.unity.animation.rigging",
-        "com.unity.cinemachine",
         "com.unity.editorcoroutines",
         "com.unity.ide.rider",
         "com.unity.textmeshpro",
-        "com.unity.timeline",
         "solo-fsw/sosxr-unity-enhancedlogger",
         "solo-fsw/sosxr-unity-swatchr",
         "solo-fsw/sosxr-unity-additionalunityevents",
@@ -27,8 +25,11 @@
         "XCharts-Team/XCharts",
         "KyleBanks/scene-ref-attribute",
         "immersivecognition/unity-experiment-framework",
+        "com.unity.timeline",
+        "com.unity.cinemachine",
         "com.unity.cloud.gltfast",
         "com.unity.nuget.newtonsoft-json",
+        "com.unity.animation.rigging",
         "com.unity.xr.openxr",
         "com.unity.inputsystem" 
     ]
