@@ -1,24 +1,34 @@
-# REPO
+# Repository: Essential Importer for SOSXR
 
-- By: Maarten R. Struijk Wilbrink
-- For: Leiden University SOSXR
-- Fully open source: Feel free to add to, or modify, anything you see fit.
+- **Author:** Maarten R. Struijk Wilbrink
+- **For:** Leiden University, SOSXR Project
+- **License:** Fully open source – contributions and modifications are welcome.
 
-## Installation
-1. Open the Unity project you want to install this package in.
-2. Open the Package Manager window.
-3. Click on the `+` button and select `Add package from git URL...`: https://github.com/mrstruijk/essentialimporter.git
-4. Paste the URL of this repo into the text field
-5. Press `Add`.
+---
 
+## Installation Guide
 
+### Prerequisites
 
-## Known issues
-- Add Simple Helpers (fix)
+1. **Unity Version:** Start with the latest Unity LTS version and choose a project template (e.g., VR Template).
+2. **Project Setup:**
+    - Open your Unity project.
+    - Go to **Window > Package Manager**.
+    - Click the **+** button, and select **Add package from git URL...**.
+    - Paste the following URL: `https://github.com/mrstruijk/essentialimporter.git`.
+    - Press **Add** to include the package.
 
-https://github.com/mrstruijk/essentialimporter.git
+3. **Project Initialization:**
+    - In the top bar, navigate to **SOSXR > Setup > Create JSON templates**.
+    - This will generate new templates in `Assets/_SOSXR/Resources`. Adjust as necessary.
+    - Return to **SOSXR > Setup** and select **Run Full Project Setup**.
 
-```
+### Add Package Dependencies
+
+To ensure all dependencies are installed, add the following entries to your `manifest.json` file (located at `Packages/manifest.json`). **Note**: Avoid duplicate entries, especially if you already have GLTFast or similar packages installed. Each line should end with a comma, except for the last one.
+
+```json
+{
     "com.browar.editor-toolbox": "https://github.com/arimger/Unity-Editor-Toolbox.git#upm",
     "com.danieleverland.scriptableobjectarchitecture": "https://github.com/solo-fsw/sosxr-unity-scriptableobjectarchitecture.git",
     "com.kylewbanks.scenerefattribute": "https://github.com/KyleBanks/scene-ref-attribute.git",
@@ -34,12 +44,14 @@ https://github.com/mrstruijk/essentialimporter.git
     "com.sosxr.readmehelpers": "https://github.com/solo-fsw/sosxr-unity-readmehelpers.git",
     "com.sosxr.extensionmethods": "https://github.com/solo-fsw/sosxr-unity-extensionmethods.git",
     "com.sosxr.simplehelpers": "https://github.com/solo-fsw/sosxr-unity-simplehelpers.git",
-    "com.swatchr": "https://github.com/solo-fsw/sosxr-unity-swatchr.git",
+    "com.jknight.swatchr": "https://github.com/solo-fsw/sosxr-unity-swatchr.git",
     "com.tarodev.autosave": "https://github.com/solo-fsw/sosxr-unity-autosave.git",
     "com.yasirkula.ingamedebugconsole": "https://github.com/solo-fsw/sosxr-unity-ingamedebugconsole.git",
     "com.unity.cloud.gltfast": "6.8.0",
-    "com.unity.nuget.newtonsoft-json": "3.2.1",
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+}
 ```
 
-Install [UXF](https://github.com/immersivecognition/unity-experiment-framework/releases/latest)
+### Installing UXF
 
+Download and install [UXF](https://github.com/immersivecognition/unity-experiment-framework/releases/latest) as a `.unitypackage` file.
