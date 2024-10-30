@@ -9,6 +9,7 @@ using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using static System.IO.Path;
 
+
 public static class ProjectSetup
 {
     [MenuItem("SOSXR/Setup/Create JSON Templates")]
@@ -26,6 +27,7 @@ public static class ProjectSetup
 
         AssetDatabase.Refresh();
     }
+
 
     [MenuItem("SOSXR/Setup/Run Full Project Setup")]
     public static async void RunFullProjectSetup()
@@ -46,13 +48,14 @@ public static class ProjectSetup
         Debug.Log("Full project setup completed successfully.");
     }
 
+
     private static async Task ImportEssentialEditorToolsAsync()
     {
         var assets = GetAssetsFromJson("editor-assets");
         var installedAssets = GetInstalledAssets();
 
         var assetsToInstall = assets.Where(asset => !IsAssetInstalled(asset, installedAssets)).ToArray();
-        
+
         foreach (var asset in assets.Where(asset => IsAssetInstalled(asset, installedAssets)))
         {
             Debug.Log($"Asset already installed: {asset}");
@@ -64,12 +67,14 @@ public static class ProjectSetup
         }
     }
 
+
     private static async Task ImportEssentialPackagesAsync()
     {
         var packages = GetPackagesFromJson("packages");
-        
+
         // Check which packages are already installed
         var listRequest = Client.List();
+
         while (!listRequest.IsCompleted)
         {
             await Task.Delay(100);
@@ -78,13 +83,14 @@ public static class ProjectSetup
         if (listRequest.Status == StatusCode.Success)
         {
             var installedPackages = listRequest.Result.Select(p => p.name).ToArray();
-            
+
             // Split into Unity and Git packages based on naming convention
             var unityPackages = packages.Where(p => p.StartsWith("com.")).ToArray();
             var gitPackages = packages.Where(p => !p.StartsWith("com.")).ToArray();
 
             // Filter out already installed Unity packages
             var unityPackagesToInstall = unityPackages.Where(p => !installedPackages.Contains(p)).ToArray();
+
             foreach (var package in unityPackages.Where(p => installedPackages.Contains(p)))
             {
                 Debug.Log($"Package already installed: {package}");
@@ -92,17 +98,20 @@ public static class ProjectSetup
 
             // For Git packages, we need to check the package name without the URL
             var gitUrls = ConstructGitUrls(gitPackages);
-            var gitPackagesToInstall = gitUrls.Where(url => 
+
+            var gitPackagesToInstall = gitUrls.Where(url =>
             {
                 var packageName = url.Split('/').Last().Replace(".git", "");
+
                 return !installedPackages.Any(p => p.Contains(packageName));
             }).ToArray();
 
-            foreach (var package in gitUrls.Where(url => 
-            {
-                var packageName = url.Split('/').Last().Replace(".git", "");
-                return installedPackages.Any(p => p.Contains(packageName));
-            }))
+            foreach (var package in gitUrls.Where(url =>
+                     {
+                         var packageName = url.Split('/').Last().Replace(".git", "");
+
+                         return installedPackages.Any(p => p.Contains(packageName));
+                     }))
             {
                 Debug.Log($"Git package already installed: {package}");
             }
@@ -119,12 +128,13 @@ public static class ProjectSetup
         }
     }
 
+
     private static void CreateFolders()
     {
-        Folders.Create("_SOSXR/Scripts", "_SOSXR/Textures & Materials", "_SOSXR/Models", 
-            "_SOSXR/Animation", "_SOSXR/Prefabs", "_SOSXR/Swatches", "_SOSXR/Rendering", 
+        Folders.Create("_SOSXR/Scripts", "_SOSXR/Textures & Materials", "_SOSXR/Models",
+            "_SOSXR/Animation", "_SOSXR/Prefabs", "_SOSXR/Swatches", "_SOSXR/Rendering",
             "_SOSXR/XR", "_SOSXR/Input");
-        
+
         Folders.Move("Scenes", "_SOSXR");
         Folders.Move("Settings", "_SOSXR");
         Folders.Delete("TutorialInfo");
@@ -134,21 +144,26 @@ public static class ProjectSetup
         AssetDatabase.Refresh();
     }
 
+
     private static string[] GetInstalledAssets()
     {
         return AssetDatabase.GetAllAssetPaths();
     }
 
+
     private static bool IsAssetInstalled(string assetPath, string[] installedAssets)
     {
         var assetName = assetPath.Split('/').Last().Replace(".unitypackage", "");
+
         return installedAssets.Any(path => path.Contains(assetName, StringComparison.OrdinalIgnoreCase));
     }
+
 
     private static async Task ImportAssetsFromJsonAsync(string[] assets)
     {
         await Import.FromAssetStoreAsync(assets);
     }
+
 
     private static async Task ImportPackagesFromJsonAsync(string fileName)
     {
@@ -161,6 +176,7 @@ public static class ProjectSetup
         await Import.Packages(ConstructGitUrls(gitPackages));
     }
 
+
     private static string[] GetPackagesFromJson(string fileName)
     {
         var file = Resources.Load<TextAsset>(fileName);
@@ -168,6 +184,7 @@ public static class ProjectSetup
         if (file == null)
         {
             Debug.LogError($"{fileName}.json not found in Resources folder.");
+
             return Array.Empty<string>();
         }
 
@@ -176,11 +193,13 @@ public static class ProjectSetup
         if (data?.packages == null || data.packages.Length == 0)
         {
             Debug.LogError($"Nothing found in {fileName}.json.");
+
             return Array.Empty<string>();
         }
 
         return data.packages;
     }
+
 
     private static string[] GetAssetsFromJson(string fileName)
     {
@@ -189,6 +208,7 @@ public static class ProjectSetup
         if (file == null)
         {
             Debug.LogError($"{fileName}.json not found in Resources folder.");
+
             return Array.Empty<string>();
         }
 
@@ -197,11 +217,13 @@ public static class ProjectSetup
         if (data?.assets == null || data.assets.Length == 0)
         {
             Debug.LogError($"Nothing found in {fileName}.json.");
+
             return Array.Empty<string>();
         }
 
         return data.assets;
     }
+
 
     private static void CreateJsonFromTemplate(string templateName, string targetFolder, string newFileName)
     {
@@ -210,6 +232,7 @@ public static class ProjectSetup
         if (template == null)
         {
             Debug.LogError($"Template '{templateName}' not found in Resources folder.");
+
             return;
         }
 
@@ -221,10 +244,12 @@ public static class ProjectSetup
         AssetDatabase.Refresh();
     }
 
+
     private static string[] ConstructGitUrls(string[] repos)
     {
         return repos.Select(repo => $"https://github.com/{repo}.git").ToArray();
     }
+
 
     [Serializable]
     private class PackageList
@@ -232,18 +257,21 @@ public static class ProjectSetup
         public string[] packages;
     }
 
+
     [Serializable]
     private class AssetList
     {
         public string[] assets;
     }
 
+
     private static class Import
     {
         private static AddRequest _request;
-        private static readonly Queue<string> PackagesToInstall = new Queue<string>();
-        private static readonly Queue<string> AssetsToInstall = new Queue<string>();
+        private static readonly Queue<string> PackagesToInstall = new();
+        private static readonly Queue<string> AssetsToInstall = new();
         private static bool _isInstallationInProgress = false;
+
 
         public static async Task FromAssetStoreAsync(string[] assets)
         {
@@ -258,6 +286,7 @@ public static class ProjectSetup
             }
         }
 
+
         private static async Task StartNextAssetImportAsync()
         {
             while (AssetsToInstall.Count > 0)
@@ -267,23 +296,24 @@ public static class ProjectSetup
 
                 if (Application.platform == RuntimePlatform.OSXEditor)
                 {
-                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), 
+                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
                         "Library/Unity/Asset Store-5.x");
                 }
                 else if (Application.platform == RuntimePlatform.WindowsEditor)
                 {
-                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
+                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                         "Unity/Asset Store-5.x");
                 }
                 else // Default to Linux path
                 {
-                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         "Unity/Asset Store-5.x");
                 }
 
                 if (!Directory.Exists(assetsFolder))
                 {
                     Debug.LogWarning($"Folder not found: {assetsFolder}. Please download asset '{assetPath.Split("/")[^1]}' from the Asset Store.");
+
                     continue;
                 }
 
@@ -303,6 +333,7 @@ public static class ProjectSetup
             }
         }
 
+
         public static async Task Packages(string[] packages)
         {
             foreach (var package in packages)
@@ -315,6 +346,7 @@ public static class ProjectSetup
                 await StartNextPackageInstallation();
             }
         }
+
 
         private static async Task StartNextPackageInstallation()
         {
@@ -329,6 +361,7 @@ public static class ProjectSetup
 
             _isInstallationInProgress = false;
         }
+
 
         private static async Task MonitorPackageInstall()
         {
@@ -349,6 +382,7 @@ public static class ProjectSetup
             _request = null;
         }
 
+
         public static async Task CompleteAssetInstallation()
         {
             while (AssetsToInstall.Count > 0 || _isInstallationInProgress)
@@ -356,6 +390,7 @@ public static class ProjectSetup
                 await Task.Delay(100);
             }
         }
+
 
         public static async Task CompletePackageInstallation()
         {
@@ -365,6 +400,7 @@ public static class ProjectSetup
             }
         }
     }
+
 
     private static class Folders
     {
@@ -383,6 +419,7 @@ public static class ProjectSetup
             }
         }
 
+
         private static void CreateSubFolders(string rootPath, string folderHierarchy)
         {
             var currentPath = rootPath;
@@ -397,6 +434,7 @@ public static class ProjectSetup
                 }
             }
         }
+
 
         public static void Move(string folderName, string destination)
         {
@@ -414,6 +452,7 @@ public static class ProjectSetup
                 Debug.LogError(error);
             }
         }
+
 
         public static void Delete(string folderName)
         {
