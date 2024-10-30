@@ -22,7 +22,7 @@ public static class ProjectSetup
             Folders.Create(targetFolder);
         }
 
-        CreateJsonFromTemplate("template-packages", targetFolder, "packages.json");
+        // CreateJsonFromTemplate("template-packages", targetFolder, "packages.json");
         CreateJsonFromTemplate("template-editor-assets", targetFolder, "editor-assets.json");
 
         AssetDatabase.Refresh();
@@ -35,10 +35,9 @@ public static class ProjectSetup
         CreateFolders();
         Debug.Log("Folders created successfully.");
         
-        await ImportEssentialPackagesAsync();
-        Debug.Log("Package import started.");
-
-        await Import.CompletePackageInstallation();
+        //await ImportEssentialPackagesAsync();
+        //Debug.Log("Package import started.");
+        //await Import.CompletePackageInstallation();
 
         await ImportEssentialEditorToolsAsync();
         Debug.Log("Editor assets import started.");
