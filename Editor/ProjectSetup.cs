@@ -130,9 +130,9 @@ public static class ProjectSetup
 
     private static void CreateFolders()
     {
-        Folders.Move("Scenes", "_SOSXR");
-        Folders.Move("Settings", "_SOSXR");
-        Folders.Move("XR", "_SOSXR");
+        //Folders.Move("Scenes", "_SOSXR");
+        //Folders.Move("Settings", "_SOSXR");
+        //Folders.Move("XR", "_SOSXR");
         Folders.Create("_SOSXR", "Scripts","Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources", "Scenes", "Settings");
    
         Folders.Delete("TutorialInfo");
