@@ -34,17 +34,17 @@ public static class ProjectSetup
     {
         CreateFolders();
         Debug.Log("Folders created successfully.");
-
-        await ImportEssentialEditorToolsAsync();
-        Debug.Log("Editor assets import started.");
-
-        await Import.CompleteAssetInstallation();
-
+        
         await ImportEssentialPackagesAsync();
         Debug.Log("Package import started.");
 
         await Import.CompletePackageInstallation();
 
+        await ImportEssentialEditorToolsAsync();
+        Debug.Log("Editor assets import started.");
+
+        await Import.CompleteAssetInstallation();
+        
         Debug.Log("Full project setup completed successfully.");
     }
 
