@@ -15,10 +15,10 @@
         "solo-fsw/sosxr-unity-markdownviewer",
         "solo-fsw/sosxr-unity-ingamedebugconsole",
         "solo-fsw/sosxr-unity-assetdependency",
-        "arimger/Unity-Editor-Toolbox",
+        "mrstruijk/UXF",
+        "mrstruijk/Unity-Editor-Toolbox",
         "XCharts-Team/XCharts",
         "KyleBanks/scene-ref-attribute",
-        "immersivecognition/unity-experiment-framework",
         "com.unity.mobile.android-logcat",
         "com.unity.cloud.gltfast",
         "com.unity.nuget.newtonsoft-json"
