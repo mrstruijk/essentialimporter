@@ -9,7 +9,6 @@
         "com.unity.ide.rider",
         "com.unity.textmeshpro",
         "com.unity.timeline",
-        "com.unity.cloud.gltfast",
         "solo-fsw/sosxr-unity-enhancedlogger",
         "solo-fsw/sosxr-unity-swatchr",
         "solo-fsw/sosxr-unity-additionalunityevents",
@@ -28,6 +27,7 @@
         "XCharts-Team/XCharts",
         "KyleBanks/scene-ref-attribute",
         "immersivecognition/unity-experiment-framework",
+        "com.unity.cloud.gltfast",
         "com.unity.nuget.newtonsoft-json",
         "com.unity.xr.openxr",
         "com.unity.inputsystem" 
