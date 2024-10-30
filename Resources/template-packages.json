@@ -1,11 +1,9 @@
 {
     "packages": [
         "com.unity.burst",
-        "com.unity.modules.imageconversion",
         "com.unity.mathematics",
-        "com.unity.mobile.android-logcat",
+        "com.unity.modules.imageconversion",
         "com.unity.editorcoroutines",
-        "com.unity.ide.rider",
         "com.unity.textmeshpro",
         "solo-fsw/sosxr-unity-enhancedlogger",
         "solo-fsw/sosxr-unity-swatchr",
@@ -25,6 +23,8 @@
         "XCharts-Team/XCharts",
         "KyleBanks/scene-ref-attribute",
         "immersivecognition/unity-experiment-framework",
+        "com.unity.ide.rider",
+        "com.unity.mobile.android-logcat",
         "com.unity.timeline",
         "com.unity.cinemachine",
         "com.unity.cloud.gltfast",
