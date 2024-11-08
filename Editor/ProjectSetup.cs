@@ -34,7 +34,7 @@ public static class ProjectSetup
     {
         CreateFolders();
         Debug.Log("Folders created successfully.");
-        
+
         //await ImportEssentialPackagesAsync();
         //Debug.Log("Package import started.");
         //await Import.CompletePackageInstallation();
@@ -43,7 +43,7 @@ public static class ProjectSetup
         Debug.Log("Editor assets import started.");
 
         await Import.CompleteAssetInstallation();
-        
+
         Debug.Log("Full project setup completed successfully.");
     }
 
@@ -133,8 +133,8 @@ public static class ProjectSetup
         //Folders.Move("Scenes", "_SOSXR");
         //Folders.Move("Settings", "_SOSXR");
         //Folders.Move("XR", "_SOSXR");
-        Folders.Create("_SOSXR", "Scripts","Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources", "Scenes", "Settings");
-   
+        Folders.Create("_SOSXR", "Scripts", "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources", "Scenes", "Settings");
+
         Folders.Delete("TutorialInfo");
 
         AssetDatabase.MoveAsset("Assets/InputSystem_Actions.inputactions", "Assets/_SOSXR/Input");
