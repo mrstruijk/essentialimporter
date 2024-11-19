@@ -70,6 +70,9 @@ public static class ProjectSetup
         Folders.Delete("TutorialInfo");
         Refresh();
 
+        Folders.Create("_SOSXR", "Scenes", "Settings");
+        Refresh();
+        
         MoveAsset("Assets/InputSystem_Actions.inputactions", "Assets/_SOSXR/Settings/InputSystem_Actions.inputactions");
         DeleteAsset("Assets/Readme.asset");
         Refresh();
