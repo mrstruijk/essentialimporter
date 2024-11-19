@@ -37,8 +37,6 @@ public static class ProjectSetup
             "com.unity.cloud.gltfast",
             "com.unity.nuget.newtonsoft-json",
             "com.unity.modules.imageconversion",
-            // "git+https://github.com/adammyhre/Unity-Utils.git",
-            // "git+https://github.com/adammyhre/Unity-Improved-Timers.git",
             "git+https://github.com/KyleBanks/scene-ref-attribute.git",
             "git+https://github.com/solo-fsw/sosxr-unity-enhancedlogger.git",
             "git+https://github.com/solo-fsw/sosxr-unity-swatchr.git",
@@ -54,8 +52,7 @@ public static class ProjectSetup
             "git+https://github.com/solo-fsw/sosxr-unity-markdownviewer.git",
             "git+https://github.com/solo-fsw/sosxr-unity-ingamedebugconsole.git",
             "git+https://github.com/solo-fsw/sosxr-unity-assetdependency.git",
-            "git+https://github.com/mrstruijk/UXF.git",
-            "git+https://github.com/mrstruijk/Unity-Editor-Toolbox.git",
+            "git+https://github.com/arimger/Unity-Editor-Toolbox.git#upm",
             "git+https://github.com/XCharts-Team/XCharts.git",
             "com.unity.inputsystem" // If necessary, import new Input System last as it requires a Unity Editor restart
         });
