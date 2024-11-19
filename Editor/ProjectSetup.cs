@@ -1,400 +1,161 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
+using static System.Environment;
 using static System.IO.Path;
+using static UnityEditor.AssetDatabase;
 
 
+/// <summary>
+///     From git-amend: https://www.youtube.com/watch?v=0_ZRHT2faQw&t=77s
+/// </summary>
 public static class ProjectSetup
 {
-    [MenuItem("SOSXR/Setup/Create JSON Templates")]
-    private static void CreateJsonFromTemplates()
+    [MenuItem("SOSXR/Setup/Import Essential Assets")]
+    public static void ImportEssentials()
     {
-        const string targetFolder = "_SOSXR/Resources";
-
-        if (!Directory.Exists(targetFolder))
-        {
-            Folders.Create(targetFolder);
-        }
-
-        // CreateJsonFromTemplate("template-packages", targetFolder, "packages.json");
-        CreateJsonFromTemplate("template-editor-assets", targetFolder, "editor-assets.json");
-
-        AssetDatabase.Refresh();
+        Assets.ImportAsset("Editor Console Pro.unitypackage", "FlyingWorm/Editor ExtensionsSystem");
+        Assets.ImportAsset("Play Mode Saver.unitypackage", "Clarky/Editor ExtensionsSystem");
+        Assets.ImportAsset("Script Inspector 3.unitypackage", "Flipbook Games/Editor ExtensionsVisual Scripting");
+        Assets.ImportAsset("Colourful Hierarchy Category GameObject.unitypackage", "M STUDIO HUB/Editor ExtensionsUtilities");
+        Assets.ImportAsset("Smart Editor Selection.unitypackage", "Overfort Games/Editor ExtensionsDesign");
+        Assets.ImportAsset("UMotion Pro - Animation Editor.unitypackage", "Soxware Interactive/Editor ExtensionsAnimation");
     }
 
 
-    [MenuItem("SOSXR/Setup/Run Full Project Setup")]
-    public static async void RunFullProjectSetup()
+    [MenuItem("SOSXR/Setup/Install Essential Packages")]
+    public static void InstallPackages()
     {
-        CreateFolders();
-        Debug.Log("Folders created successfully.");
-
-        //await ImportEssentialPackagesAsync();
-        //Debug.Log("Package import started.");
-        //await Import.CompletePackageInstallation();
-
-        await ImportEssentialEditorToolsAsync();
-        Debug.Log("Editor assets import started.");
-
-        await Import.CompleteAssetInstallation();
-
-        Debug.Log("Full project setup completed successfully.");
+        Packages.InstallPackages(new[]
+        {
+            "com.unity.2d.animation",
+            "com.unity.mobile.android-logcat",
+            "com.unity.cloud.gltfast",
+            "com.unity.nuget.newtonsoft-json",
+            "com.unity.modules.imageconversion",
+            "git+https://github.com/adammyhre/Unity-Utils.git",
+            "git+https://github.com/adammyhre/Unity-Improved-Timers.git",
+            "git+https://github.com/KyleBanks/scene-ref-attribute.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-enhancedlogger.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-swatchr.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-additionalunityevents.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-additionalgizmos.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-editortools.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-autosave.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-buildhelpers.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-extensionmethods.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-scriptableobjectarchitecture.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-timelineextensions.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-readmehelpers.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-markdownviewer.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-ingamedebugconsole.git",
+            "git+https://github.com/solo-fsw/sosxr-unity-assetdependency.git",
+            "git+https://github.com/mrstruijk/UXF.git",
+            "git+https://github.com/mrstruijk/Unity-Editor-Toolbox.git",
+            "git+https://github.com/XCharts-Team/XCharts.git",
+            "com.unity.inputsystem" // If necessary, import new Input System last as it requires a Unity Editor restart
+        });
     }
 
 
-    private static async Task ImportEssentialEditorToolsAsync()
+    [MenuItem("SOSXR/Setup/Create Folders")]
+    public static void CreateFolders()
     {
-        var assets = GetAssetsFromJson("editor-assets");
-        var installedAssets = GetInstalledAssets();
-
-        var assetsToInstall = assets.Where(asset => !IsAssetInstalled(asset, installedAssets)).ToArray();
-
-        foreach (var asset in assets.Where(asset => IsAssetInstalled(asset, installedAssets)))
-        {
-            Debug.Log($"Asset already installed: {asset}");
-        }
-
-        if (assetsToInstall.Length > 0)
-        {
-            await ImportAssetsFromJsonAsync(assetsToInstall);
-        }
-    }
-
-
-    private static async Task ImportEssentialPackagesAsync()
-    {
-        var packages = GetPackagesFromJson("packages");
-
-        // Check which packages are already installed
-        var listRequest = Client.List();
-
-        while (!listRequest.IsCompleted)
-        {
-            await Task.Delay(100);
-        }
-
-        if (listRequest.Status == StatusCode.Success)
-        {
-            var installedPackages = listRequest.Result.Select(p => p.name).ToArray();
-
-            // Split into Unity and Git packages based on naming convention
-            var unityPackages = packages.Where(p => p.StartsWith("com.")).ToArray();
-            var gitPackages = packages.Where(p => !p.StartsWith("com.")).ToArray();
-
-            // Filter out already installed Unity packages
-            var unityPackagesToInstall = unityPackages.Where(p => !installedPackages.Contains(p)).ToArray();
-
-            foreach (var package in unityPackages.Where(p => installedPackages.Contains(p)))
-            {
-                Debug.Log($"Package already installed: {package}");
-            }
-
-            // For Git packages, we need to check the package name without the URL
-            var gitUrls = ConstructGitUrls(gitPackages);
-
-            var gitPackagesToInstall = gitUrls.Where(url =>
-            {
-                var packageName = url.Split('/').Last().Replace(".git", "");
-
-                return !installedPackages.Any(p => p.Contains(packageName));
-            }).ToArray();
-
-            foreach (var package in gitUrls.Where(url =>
-                     {
-                         var packageName = url.Split('/').Last().Replace(".git", "");
-
-                         return installedPackages.Any(p => p.Contains(packageName));
-                     }))
-            {
-                Debug.Log($"Git package already installed: {package}");
-            }
-
-            // Install only the packages that aren't already present
-            if (unityPackagesToInstall.Length > 0 || gitPackagesToInstall.Length > 0)
-            {
-                await Import.Packages(unityPackagesToInstall.Concat(gitPackagesToInstall).ToArray());
-            }
-        }
-        else
-        {
-            Debug.LogError("Failed to get list of installed packages");
-        }
-    }
-
-
-    private static void CreateFolders()
-    {
-        //Folders.Move("Scenes", "_SOSXR");
-        //Folders.Move("Settings", "_SOSXR");
-        //Folders.Move("XR", "_SOSXR");
         Folders.Create("_SOSXR", "Scripts", "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources", "Scenes", "Settings");
-
+        
+        Refresh();
+        Folders.Move("_Project", "Scenes");
+        Folders.Move("_Project", "Settings");
         Folders.Delete("TutorialInfo");
+        Refresh();
 
-        AssetDatabase.MoveAsset("Assets/InputSystem_Actions.inputactions", "Assets/_SOSXR/Input");
-        AssetDatabase.DeleteAsset("Assets/Readme.asset");
-        AssetDatabase.Refresh();
+        MoveAsset("Assets/InputSystem_Actions.inputactions", "Assets/_Project/Settings/InputSystem_Actions.inputactions");
+        DeleteAsset("Assets/Readme.asset");
+        Refresh();
+
+        // Optional: Disable Domain Reload
+        EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.DisableDomainReload | EnterPlayModeOptions.DisableSceneReload;
     }
 
 
-    private static string[] GetInstalledAssets()
+    private static class Assets
     {
-        return AssetDatabase.GetAllAssetPaths();
-    }
-
-
-    private static bool IsAssetInstalled(string assetPath, string[] installedAssets)
-    {
-        var assetName = assetPath.Split('/').Last().Replace(".unitypackage", "");
-
-        return installedAssets.Any(path => path.Contains(assetName, StringComparison.OrdinalIgnoreCase));
-    }
-
-
-    private static async Task ImportAssetsFromJsonAsync(string[] assets)
-    {
-        await Import.FromAssetStoreAsync(assets);
-    }
-
-
-    private static async Task ImportPackagesFromJsonAsync(string fileName)
-    {
-        var packages = GetPackagesFromJson(fileName);
-
-        var unityPackages = packages.Where(p => p.StartsWith("com.")).ToArray();
-        var gitPackages = packages.Where(p => !p.StartsWith("com.")).ToArray();
-
-        await Import.Packages(unityPackages);
-        await Import.Packages(ConstructGitUrls(gitPackages));
-    }
-
-
-    private static string[] GetPackagesFromJson(string fileName)
-    {
-        var file = Resources.Load<TextAsset>(fileName);
-
-        if (file == null)
+        public static void ImportAsset(string asset, string folder)
         {
-            Debug.LogError($"{fileName}.json not found in Resources folder.");
+            string basePath;
 
-            return Array.Empty<string>();
-        }
-
-        var data = JsonUtility.FromJson<PackageList>(file.text);
-
-        if (data?.packages == null || data.packages.Length == 0)
-        {
-            Debug.LogError($"Nothing found in {fileName}.json.");
-
-            return Array.Empty<string>();
-        }
-
-        return data.packages;
-    }
-
-
-    private static string[] GetAssetsFromJson(string fileName)
-    {
-        var file = Resources.Load<TextAsset>(fileName);
-
-        if (file == null)
-        {
-            Debug.LogError($"{fileName}.json not found in Resources folder.");
-
-            return Array.Empty<string>();
-        }
-
-        var data = JsonUtility.FromJson<AssetList>(file.text);
-
-        if (data?.assets == null || data.assets.Length == 0)
-        {
-            Debug.LogError($"Nothing found in {fileName}.json.");
-
-            return Array.Empty<string>();
-        }
-
-        return data.assets;
-    }
-
-
-    private static void CreateJsonFromTemplate(string templateName, string targetFolder, string newFileName)
-    {
-        var template = Resources.Load<TextAsset>(templateName);
-
-        if (template == null)
-        {
-            Debug.LogError($"Template '{templateName}' not found in Resources folder.");
-
-            return;
-        }
-
-        var targetPath = Combine(Application.dataPath, targetFolder);
-        Folders.Create(targetPath);
-
-        File.WriteAllText(Combine(targetPath, newFileName), template.text);
-        Debug.Log($"Created JSON file '{newFileName}' at '{targetFolder}' using template '{templateName}'.");
-        AssetDatabase.Refresh();
-    }
-
-
-    private static string[] ConstructGitUrls(string[] repos)
-    {
-        return repos.Select(repo => $"https://github.com/{repo}.git").ToArray();
-    }
-
-
-    [Serializable]
-    private class PackageList
-    {
-        public string[] packages;
-    }
-
-
-    [Serializable]
-    private class AssetList
-    {
-        public string[] assets;
-    }
-
-
-    private static class Import
-    {
-        private static AddRequest _request;
-        private static readonly Queue<string> PackagesToInstall = new();
-        private static readonly Queue<string> AssetsToInstall = new();
-        private static bool _isInstallationInProgress = false;
-
-
-        public static async Task FromAssetStoreAsync(string[] assets)
-        {
-            foreach (var asset in assets)
+            if (OSVersion.Platform is PlatformID.MacOSX or PlatformID.Unix)
             {
-                AssetsToInstall.Enqueue(asset);
+                var homeDirectory = GetFolderPath(SpecialFolder.Personal);
+                basePath = Combine(homeDirectory, "Library/Unity/Asset Store-5.x");
+            }
+            else
+            {
+                var defaultPath = Combine(GetFolderPath(SpecialFolder.ApplicationData), "Unity");
+                basePath = Combine(EditorPrefs.GetString("AssetStoreCacheRootPath", defaultPath), "Asset Store-5.x");
             }
 
-            if (AssetsToInstall.Count > 0)
+            asset = asset.EndsWith(".unitypackage") ? asset : asset + ".unitypackage";
+
+            var fullPath = Combine(basePath, folder, asset);
+
+            if (!File.Exists(fullPath))
             {
-                await StartNextAssetImportAsync();
+                throw new FileNotFoundException($"The asset package was not found at the path: {fullPath}");
             }
+
+            ImportPackage(fullPath, false);
         }
+    }
 
 
-        private static async Task StartNextAssetImportAsync()
-        {
-            while (AssetsToInstall.Count > 0)
-            {
-                var assetPath = AssetsToInstall.Dequeue();
-                string assetsFolder;
-
-                if (Application.platform == RuntimePlatform.OSXEditor)
-                {
-                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                        "Library/Unity/Asset Store-5.x");
-                }
-                else if (Application.platform == RuntimePlatform.WindowsEditor)
-                {
-                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                        "Unity/Asset Store-5.x");
-                }
-                else // Default to Linux path
-                {
-                    assetsFolder = Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "Unity/Asset Store-5.x");
-                }
-
-                if (!Directory.Exists(assetsFolder))
-                {
-                    Debug.LogWarning($"Folder not found: {assetsFolder}. Please download asset '{assetPath.Split("/")[^1]}' from the Asset Store.");
-
-                    continue;
-                }
-
-                var fullAssetPath = Combine(assetsFolder, assetPath);
-
-                if (File.Exists(fullAssetPath))
-                {
-                    AssetDatabase.ImportPackage(fullAssetPath, false);
-                    Debug.Log($"Imported asset from: {fullAssetPath}");
-                }
-                else
-                {
-                    Debug.LogWarning($"Asset '{assetPath}' not found in '{assetsFolder}'. Please download it from the Asset Store.");
-                }
-
-                await Task.Delay(10); // Slight delay between imports
-            }
-        }
+    private static class Packages
+    {
+        private static AddRequest request;
+        private static readonly Queue<string> packagesToInstall = new();
 
 
-        public static async Task Packages(string[] packages)
+        public static void InstallPackages(string[] packages)
         {
             foreach (var package in packages)
             {
-                PackagesToInstall.Enqueue(package);
+                packagesToInstall.Enqueue(package);
             }
 
-            if (!_isInstallationInProgress)
+            if (packagesToInstall.Count > 0)
             {
-                await StartNextPackageInstallation();
-            }
-        }
-
-
-        private static async Task StartNextPackageInstallation()
-        {
-            _isInstallationInProgress = true;
-
-            while (PackagesToInstall.Count > 0)
-            {
-                var packageToInstall = PackagesToInstall.Dequeue();
-                _request = Client.Add(packageToInstall);
-                await MonitorPackageInstall();
-            }
-
-            _isInstallationInProgress = false;
-        }
-
-
-        private static async Task MonitorPackageInstall()
-        {
-            while (_request != null && !_request.IsCompleted)
-            {
-                await Task.Delay(100);
-            }
-
-            if (_request.Status == StatusCode.Success)
-            {
-                Debug.Log($"Installed: {_request.Result.packageId}");
-            }
-            else if (_request.Status >= StatusCode.Failure)
-            {
-                Debug.LogError(_request.Error.message);
-            }
-
-            _request = null;
-        }
-
-
-        public static async Task CompleteAssetInstallation()
-        {
-            while (AssetsToInstall.Count > 0 || _isInstallationInProgress)
-            {
-                await Task.Delay(100);
+                StartNextPackageInstallation();
             }
         }
 
 
-        public static async Task CompletePackageInstallation()
+        private static async void StartNextPackageInstallation()
         {
-            while (PackagesToInstall.Count > 0 || _isInstallationInProgress)
+            request = Client.Add(packagesToInstall.Dequeue());
+
+            while (!request.IsCompleted)
             {
-                await Task.Delay(100);
+                await Task.Delay(10);
+            }
+
+            if (request.Status == StatusCode.Success)
+            {
+                Debug.Log("Installed: " + request.Result.packageId);
+            }
+            else if (request.Status >= StatusCode.Failure)
+            {
+                Debug.LogError(request.Error.message);
+            }
+
+            if (packagesToInstall.Count > 0)
+            {
+                await Task.Delay(1000);
+                StartNextPackageInstallation();
             }
         }
     }
@@ -404,25 +165,26 @@ public static class ProjectSetup
     {
         public static void Create(string root, params string[] folders)
         {
-            var fullPath = Combine(Application.dataPath, root);
+            var fullpath = Combine(Application.dataPath, root);
 
-            if (!Directory.Exists(fullPath))
+            if (!Directory.Exists(fullpath))
             {
-                Directory.CreateDirectory(fullPath);
+                Directory.CreateDirectory(fullpath);
             }
 
             foreach (var folder in folders)
             {
-                CreateSubFolders(fullPath, folder);
+                CreateSubFolders(fullpath, folder);
             }
         }
 
 
         private static void CreateSubFolders(string rootPath, string folderHierarchy)
         {
+            var folders = folderHierarchy.Split('/');
             var currentPath = rootPath;
 
-            foreach (var folder in folderHierarchy.Split('/'))
+            foreach (var folder in folders)
             {
                 currentPath = Combine(currentPath, folder);
 
@@ -434,31 +196,30 @@ public static class ProjectSetup
         }
 
 
-        public static void Move(string folderName, string destination)
+        public static void Move(string newParent, string folderName)
         {
             var sourcePath = $"Assets/{folderName}";
 
-            if (!AssetDatabase.IsValidFolder(sourcePath))
+            if (IsValidFolder(sourcePath))
             {
-                return;
-            }
+                var destinationPath = $"Assets/{newParent}/{folderName}";
+                var error = MoveAsset(sourcePath, destinationPath);
 
-            var error = AssetDatabase.MoveAsset(sourcePath, $"Assets/{destination}/{folderName}");
-
-            if (!string.IsNullOrEmpty(error))
-            {
-                Debug.LogError(error);
+                if (!string.IsNullOrEmpty(error))
+                {
+                    Debug.LogError($"Failed to move {folderName}: {error}");
+                }
             }
         }
 
 
         public static void Delete(string folderName)
         {
-            var path = $"Assets/{folderName}";
+            var pathToDelete = $"Assets/{folderName}";
 
-            if (AssetDatabase.IsValidFolder(path))
+            if (IsValidFolder(pathToDelete))
             {
-                AssetDatabase.DeleteAsset(path);
+                DeleteAsset(pathToDelete);
             }
         }
     }
