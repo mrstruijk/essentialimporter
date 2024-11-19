@@ -66,7 +66,7 @@ public static class ProjectSetup
     [MenuItem("SOSXR/Setup/Create Folders")]
     public static void CreateFolders()
     {
-        Folders.Create("_SOSXR", "Scripts", "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources", "Scenes", "Settings");
+        Folders.Create("_SOSXR", "Scripts", "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources");
         
         Refresh();
         Folders.Move("_SOSXR", "Scenes");
