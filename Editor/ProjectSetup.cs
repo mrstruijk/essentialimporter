@@ -188,10 +188,12 @@ public static class ProjectSetup
             {
                 currentPath = Combine(currentPath, folder);
 
-                if (!Directory.Exists(currentPath))
+                if (Directory.Exists(currentPath))
                 {
-                    Directory.CreateDirectory(currentPath);
+                    continue;
                 }
+
+                Directory.CreateDirectory(currentPath);
             }
         }
 
@@ -200,15 +202,23 @@ public static class ProjectSetup
         {
             var sourcePath = $"Assets/{folderName}";
 
-            if (IsValidFolder(sourcePath))
+            if (!IsValidFolder(sourcePath))
             {
-                var destinationPath = $"Assets/{newParent}/{folderName}";
-                var error = MoveAsset(sourcePath, destinationPath);
+                return;
+            }
 
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Debug.LogError($"Failed to move {folderName}: {error}");
-                }
+            var destinationPath = $"Assets/{newParent}/{folderName}";
+
+            if (Directory.Exists(destinationPath))
+            {
+                return;
+            }
+            
+            var error = MoveAsset(sourcePath, destinationPath);
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                Debug.LogError($"Failed to move {folderName}: {error}");
             }
         }
 
@@ -217,10 +227,12 @@ public static class ProjectSetup
         {
             var pathToDelete = $"Assets/{folderName}";
 
-            if (IsValidFolder(pathToDelete))
+            if (!IsValidFolder(pathToDelete))
             {
-                DeleteAsset(pathToDelete);
+                return;
             }
+
+            DeleteAsset(pathToDelete);
         }
     }
 }
