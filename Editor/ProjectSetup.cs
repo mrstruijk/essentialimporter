@@ -62,15 +62,20 @@ public static class ProjectSetup
     [MenuItem("SOSXR/Setup/Create Folders")]
     public static void CreateFolders()
     {
-        Folders.Create("_SOSXR", "Scripts", "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources");
+        Folders.Create("_SOSXR",  "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources");
         
         Refresh();
         Folders.Move("_SOSXR", "Scenes");
         Folders.Move("_SOSXR", "Settings");
+        Folders.Move("_SOSXR", "Scripts");
         Folders.Delete("TutorialInfo");
         Refresh();
 
-        Folders.Create("_SOSXR", "Scenes", "Settings");
+        Folders.Create("_SOSXR", "Scenes", "Settings", "Scripts");
+        Refresh();
+        
+        Folders.Rename("_SOSXR/Scenes", "_SOSXR/_Scenes");
+        Folders.Rename("_SOSXR/Scripts", "_SOSXR/_Scripts");
         Refresh();
         
         MoveAsset("Assets/InputSystem_Actions.inputactions", "Assets/_SOSXR/Settings/InputSystem_Actions.inputactions");
@@ -233,5 +238,35 @@ public static class ProjectSetup
 
             DeleteAsset(pathToDelete);
         }
+        
+        public static void Rename(string oldName, string newName)
+        {
+            var oldPath = $"Assets/{oldName}";
+            var newPath = $"Assets/{newName}";
+
+            if (!IsValidFolder(oldPath))
+            {
+                Debug.LogError($"Folder '{oldName}' does not exist.");
+                return;
+            }
+
+            if (IsValidFolder(newPath))
+            {
+                Debug.LogError($"A folder named '{newName}' already exists.");
+                return;
+            }
+
+            var error = MoveAsset(oldPath, newPath);
+
+            if (!string.IsNullOrEmpty(error))
+            {
+                Debug.LogError($"Failed to rename folder '{oldName}' to '{newName}': {error}");
+            }
+            else
+            {
+                Debug.Log($"Successfully renamed folder '{oldName}' to '{newName}'.");
+            }
+        }
+
     }
 }
