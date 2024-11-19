@@ -69,12 +69,12 @@ public static class ProjectSetup
         Folders.Create("_SOSXR", "Scripts", "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources", "Scenes", "Settings");
         
         Refresh();
-        Folders.Move("_Project", "Scenes");
-        Folders.Move("_Project", "Settings");
+        Folders.Move("_SOSXR", "Scenes");
+        Folders.Move("_SOSXR", "Settings");
         Folders.Delete("TutorialInfo");
         Refresh();
 
-        MoveAsset("Assets/InputSystem_Actions.inputactions", "Assets/_Project/Settings/InputSystem_Actions.inputactions");
+        MoveAsset("Assets/InputSystem_Actions.inputactions", "Assets/_SOSXR/Settings/InputSystem_Actions.inputactions");
         DeleteAsset("Assets/Readme.asset");
         Refresh();
 
