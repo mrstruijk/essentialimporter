@@ -33,7 +33,6 @@ public static class ProjectSetup
     {
         Packages.InstallPackages(new[]
         {
-            "com.unity.2d.animation",
             "com.unity.mobile.android-logcat",
             "com.unity.cloud.gltfast",
             "com.unity.nuget.newtonsoft-json",
