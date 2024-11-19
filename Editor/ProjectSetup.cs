@@ -24,7 +24,7 @@ public static class ProjectSetup
         Assets.ImportAsset("Script Inspector 3.unitypackage", "Flipbook Games/Editor ExtensionsVisual Scripting");
         Assets.ImportAsset("Colourful Hierarchy Category GameObject.unitypackage", "M STUDIO HUB/Editor ExtensionsUtilities");
         Assets.ImportAsset("Smart Editor Selection.unitypackage", "Overfort Games/Editor ExtensionsDesign");
-        Assets.ImportAsset("UMotion Pro - Animation Editor.unitypackage", "Soxware Interactive/Editor ExtensionsAnimation");
+        Assets.ImportAsset("UMotion Pro - Animation Editor.unitypackage", "Soxware Interactive/Editor ExtensionsAnimation"); 
     }
 
 
@@ -37,8 +37,8 @@ public static class ProjectSetup
             "com.unity.cloud.gltfast",
             "com.unity.nuget.newtonsoft-json",
             "com.unity.modules.imageconversion",
-            "git+https://github.com/adammyhre/Unity-Utils.git",
-            "git+https://github.com/adammyhre/Unity-Improved-Timers.git",
+            // "git+https://github.com/adammyhre/Unity-Utils.git",
+            // "git+https://github.com/adammyhre/Unity-Improved-Timers.git",
             "git+https://github.com/KyleBanks/scene-ref-attribute.git",
             "git+https://github.com/solo-fsw/sosxr-unity-enhancedlogger.git",
             "git+https://github.com/solo-fsw/sosxr-unity-swatchr.git",
