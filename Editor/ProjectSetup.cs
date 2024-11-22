@@ -24,7 +24,7 @@ public static class ProjectSetup
         Assets.ImportAsset("Script Inspector 3.unitypackage", "Flipbook Games/Editor ExtensionsVisual Scripting");
         Assets.ImportAsset("Colourful Hierarchy Category GameObject.unitypackage", "M STUDIO HUB/Editor ExtensionsUtilities");
         Assets.ImportAsset("Smart Editor Selection.unitypackage", "Overfort Games/Editor ExtensionsDesign");
-        Assets.ImportAsset("UMotion Pro - Animation Editor.unitypackage", "Soxware Interactive/Editor ExtensionsAnimation"); 
+        Assets.ImportAsset("UMotion Pro - Animation Editor.unitypackage", "Soxware Interactive/Editor ExtensionsAnimation");
     }
 
 
@@ -62,8 +62,8 @@ public static class ProjectSetup
     [MenuItem("SOSXR/Setup/Create Folders")]
     public static void CreateFolders()
     {
-        Folders.Create("_SOSXR",  "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources");
-        
+        Folders.Create("_SOSXR", "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources");
+
         Refresh();
         Folders.Move("_SOSXR", "Scenes");
         Folders.Move("_SOSXR", "Settings");
@@ -73,11 +73,11 @@ public static class ProjectSetup
 
         Folders.Create("_SOSXR", "Scenes", "Settings", "Scripts");
         Refresh();
-        
+
         Folders.Rename("_SOSXR/Scenes", "_SOSXR/_Scenes");
         Folders.Rename("_SOSXR/Scripts", "_SOSXR/_Scripts");
         Refresh();
-        
+
         MoveAsset("Assets/InputSystem_Actions.inputactions", "Assets/_SOSXR/Settings/InputSystem_Actions.inputactions");
         DeleteAsset("Assets/Readme.asset");
         Refresh();
@@ -217,7 +217,7 @@ public static class ProjectSetup
             {
                 return;
             }
-            
+
             var error = MoveAsset(sourcePath, destinationPath);
 
             if (!string.IsNullOrEmpty(error))
@@ -238,7 +238,8 @@ public static class ProjectSetup
 
             DeleteAsset(pathToDelete);
         }
-        
+
+
         public static void Rename(string oldName, string newName)
         {
             var oldPath = $"Assets/{oldName}";
@@ -247,12 +248,14 @@ public static class ProjectSetup
             if (!IsValidFolder(oldPath))
             {
                 Debug.LogError($"Folder '{oldName}' does not exist.");
+
                 return;
             }
 
             if (IsValidFolder(newPath))
             {
                 Debug.LogError($"A folder named '{newName}' already exists.");
+
                 return;
             }
 
@@ -267,6 +270,5 @@ public static class ProjectSetup
                 Debug.Log($"Successfully renamed folder '{oldName}' to '{newName}'.");
             }
         }
-
     }
 }
