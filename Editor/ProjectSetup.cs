@@ -37,6 +37,7 @@ public static class ProjectSetup
             "com.unity.cloud.gltfast",
             "com.unity.nuget.newtonsoft-json",
             "com.unity.modules.imageconversion",
+            "com.unity.memoryprofiler",
             "git+https://github.com/KyleBanks/scene-ref-attribute.git",
             "git+https://github.com/solo-fsw/sosxr-unity-enhancedlogger.git",
             "git+https://github.com/solo-fsw/sosxr-unity-swatchr.git",
