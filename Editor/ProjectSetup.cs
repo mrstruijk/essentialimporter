@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
 using UnityEngine;
@@ -12,10 +13,53 @@ using static UnityEditor.AssetDatabase;
 
 
 /// <summary>
-///     From git-amend: https://www.youtube.com/watch?v=0_ZRHT2faQw&t=77s
+///     Based on git-amend: https://www.youtube.com/watch?v=0_ZRHT2faQw&t=77s
 /// </summary>
 public static class ProjectSetup
 {
+    private static readonly string _iconName = "Leiden_LU_seal_alpha";
+    private static readonly string _companyName = "SOSXR";
+    private static readonly string _initialSemVer = "0_0_0d";
+    private static readonly int _initialBundleVersionCode = 0;
+
+
+    [MenuItem("SOSXR/Setup/Initialize Project", priority = 0)]
+    public static void InitializeProject()
+    {
+        var icon = Resources.Load<Texture2D>(_iconName);
+        var sprite = Resources.Load<Sprite>(_iconName);
+
+        PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new[] {icon}, IconKind.Any);
+
+        PlayerSettings.companyName = _companyName;
+
+        if (string.IsNullOrEmpty(PlayerSettings.bundleVersion))
+        {
+            PlayerSettings.bundleVersion = _initialSemVer;
+        }
+
+        PlayerSettings.Android.bundleVersionCode = _initialBundleVersionCode;
+
+        PlayerSettings.virtualRealitySplashScreen = icon;
+
+        PlayerSettings.SplashScreen.show = true;
+        PlayerSettings.SplashScreen.showUnityLogo = true;
+        PlayerSettings.SplashScreen.unityLogoStyle = PlayerSettings.SplashScreen.UnityLogoStyle.LightOnDark;
+        PlayerSettings.SplashScreen.drawMode = PlayerSettings.SplashScreen.DrawMode.AllSequential;
+        PlayerSettings.SplashScreen.animationMode = PlayerSettings.SplashScreen.AnimationMode.Dolly;
+
+        PlayerSettings.SplashScreen.logos = new[]
+        {
+            new PlayerSettings.SplashScreenLogo
+            {
+                logo = sprite,
+                duration = 2
+            },
+            PlayerSettings.SplashScreenLogo.CreateWithUnityLogo() // Need to add this explicitly
+        };
+    }
+
+
     [MenuItem("SOSXR/Setup/Import Essential Assets")]
     public static void ImportEssentials()
     {
@@ -60,7 +104,7 @@ public static class ProjectSetup
     }
 
 
-    [MenuItem("SOSXR/Setup/Create Folders")]
+    [MenuItem("SOSXR/Setup/Create Folders", priority = 1)]
     public static void CreateFolders()
     {
         Folders.Create("_SOSXR", "Textures & Materials", "Models", "Animation", "Prefabs", "Swatches", "Rendering", "XR", "Input", "Collected Data", "Resources");
