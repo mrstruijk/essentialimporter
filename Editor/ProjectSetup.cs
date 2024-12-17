@@ -72,6 +72,7 @@ public static class ProjectSetup
     {
         Packages.InstallPackages(new[]
         {
+            "com.unity.ide.rider",
             "com.unity.mobile.android-logcat",
             "com.unity.cloud.gltfast",
             "com.unity.nuget.newtonsoft-json",
