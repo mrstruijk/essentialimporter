@@ -32,16 +32,11 @@ public static class ProjectSetup
         PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new[] {icon}, IconKind.Any);
 
         PlayerSettings.companyName = _companyName;
-
-        //if (string.IsNullOrEmpty(PlayerSettings.bundleVersion))
-        {
-            PlayerSettings.bundleVersion = _initialSemVer;
-        }
-
+        
+        PlayerSettings.bundleVersion = _initialSemVer;
         PlayerSettings.Android.bundleVersionCode = _initialBundleVersionCode;
 
         PlayerSettings.virtualRealitySplashScreen = icon;
-
         PlayerSettings.SplashScreen.show = true;
         PlayerSettings.SplashScreen.showUnityLogo = true;
         PlayerSettings.SplashScreen.unityLogoStyle = PlayerSettings.SplashScreen.UnityLogoStyle.LightOnDark;
