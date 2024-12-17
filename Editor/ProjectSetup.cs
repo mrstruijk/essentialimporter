@@ -33,7 +33,7 @@ public static class ProjectSetup
 
         PlayerSettings.companyName = _companyName;
 
-        if (string.IsNullOrEmpty(PlayerSettings.bundleVersion))
+        //if (string.IsNullOrEmpty(PlayerSettings.bundleVersion))
         {
             PlayerSettings.bundleVersion = _initialSemVer;
         }
