@@ -37,8 +37,8 @@ namespace SOSXR.Setup
             {
                 "com.unity.ide.rider",
                 "com.unity.mobile.android-logcat",
-                "com.unity.cloud.gltfast",
                 "com.unity.nuget.newtonsoft-json",
+                "com.unity.cloud.gltfast",
                 "com.unity.modules.imageconversion",
                 "com.unity.memoryprofiler",
                 "git+https://github.com/KyleBanks/scene-ref-attribute.git",
