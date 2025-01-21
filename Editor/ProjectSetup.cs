@@ -22,6 +22,7 @@ namespace SOSXR.Setup
         public static void ImportEssentials()
         {
             Assets.ImportAsset("Editor Console Pro.unitypackage", "FlyingWorm/Editor ExtensionsSystem");
+            Assets.ImportAsset("Missing Script Checker.unitypackage", "LLS/Editor ExtensionsSystem");
             Assets.ImportAsset("Play Mode Saver.unitypackage", "Clarky/Editor ExtensionsSystem");
             Assets.ImportAsset("Script Inspector 3.unitypackage", "Flipbook Games/Editor ExtensionsVisual Scripting");
             Assets.ImportAsset("Colourful Hierarchy Category GameObject.unitypackage", "M STUDIO HUB/Editor ExtensionsUtilities");
