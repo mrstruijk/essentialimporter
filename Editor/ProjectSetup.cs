@@ -21,7 +21,12 @@ namespace SOSXR.Setup
         [MenuItem("SOSXR/Setup/Import Essential Assets")]
         public static void ImportEssentials()
         {
-            Assets.ImportAsset("Editor Console Pro.unitypackage", "FlyingWorm/Editor ExtensionsSystem");
+            if (!Assets.ImportAsset("DOTween Pro.unitypackage", "Demigiant/Editor ExtensionsVisual Scripting"))
+            {
+                Assets.ImportAsset("Editor Console Pro.unitypackage", "Demigiant/Editor ExtensionsAnimation");
+            }
+
+            Assets.ImportAsset("DOTween HOTween v2.unitypackage", "FlyingWorm/Editor ExtensionsSystem");
             Assets.ImportAsset("Missing Script Checker.unitypackage", "LLS/Editor ExtensionsSystem");
             Assets.ImportAsset("Play Mode Saver.unitypackage", "Clarky/Editor ExtensionsSystem");
             Assets.ImportAsset("Script Inspector 3.unitypackage", "Flipbook Games/Editor ExtensionsVisual Scripting");
@@ -94,7 +99,7 @@ namespace SOSXR.Setup
 
         private static class Assets
         {
-            public static void ImportAsset(string asset, string folder)
+            public static bool ImportAsset(string asset, string folder)
             {
                 string basePath;
 
@@ -115,10 +120,14 @@ namespace SOSXR.Setup
 
                 if (!File.Exists(fullPath))
                 {
-                    throw new FileNotFoundException($"The asset package was not found at the path: {fullPath}");
+                    Debug.LogWarning($"The asset package was not found at the path: {fullPath}");
+
+                    return false;
                 }
 
                 ImportPackage(fullPath, false);
+
+                return true;
             }
         }
 
