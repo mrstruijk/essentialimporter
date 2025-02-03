@@ -28,7 +28,7 @@ namespace SOSXR.Setup
 
         /// <summary>
         ///     These are presets that in theory should be applied to projects only once, at the beginning.
-        /// A dialog will display if the presets have already been applied, asking for confirmation.
+        ///     A dialog will display if the presets have already been applied, asking for confirmation.
         /// </summary>
         [MenuItem("SOSXR/Setup/Setup Initial Presets")]
         private static async void SetInitialPresets()
@@ -44,7 +44,7 @@ namespace SOSXR.Setup
                         return;
                     }
                 }
-                
+
                 await SetPlayerSettingsPreset();
                 await SetQualitySettingsPreset();
 
@@ -79,12 +79,12 @@ namespace SOSXR.Setup
                 {
                     continue;
                 }
-                
+
                 if (preset == null)
                 {
                     continue;
                 }
-                
+
                 var path = AssetDatabase.GetAssetPath(target);
 
                 if (string.IsNullOrEmpty(path))
@@ -214,13 +214,13 @@ namespace SOSXR.Setup
 
                 return;
             }
-            
+
             foreach (var guid in guids)
             {
                 var path = AssetDatabase.GUIDToAssetPath(guid);
 
                 var preset = AssetDatabase.LoadAssetAtPath<Preset>(path);
-                
+
                 var type = preset.GetPresetType();
 
                 var list = new List<DefaultPreset>(Preset.GetDefaultPresetsForType(type));
@@ -229,9 +229,9 @@ namespace SOSXR.Setup
                 {
                     return;
                 }
-                
+
                 var presetFilter = preset.name.Replace("_SOSXR_Default", "").Trim().Split('_').Last();
-                
+
                 // This means that the preset nane should end in _SOSXR_Default, and that before that should be the name of the filter I want to apply
                 // This is a clunky way, but it works for now. I'll improve it later.
                 // So the preset name TextureImporter_icon_SOSXR_Default will apply to TextureImporter, and the filter will be icon
